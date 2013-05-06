@@ -11,7 +11,7 @@ $ git clone https://github.com/springframework-meta/gs-upload-file.git
 
 In the `start` folder, you'll find a bare project, ready for you to copy-n-paste code snippets from this document. In the `complete` folder, you'll find the complete project code.
 
-Before we can write code a file uploader, there's some initial project setup that's required. Or, you can skip straight to the [fun part]().
+Before we can write code a file uploader, there's some initial project setup that's required. Or, you can skip straight to the [fun part](#creating-a-file-upload-controller).
 
 Selecting Dependencies
 ----------------------
