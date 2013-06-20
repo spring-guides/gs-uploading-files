@@ -26,4 +26,4 @@ build/
 # Test files
 
 *-uploaded
-
+dependency-reduced-pom.xml

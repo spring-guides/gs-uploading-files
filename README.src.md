@@ -1,251 +1,179 @@
 Getting Started: Uploading a File
-========================================
+=================================
 
-This Getting Started guide will walk you through the process of creating a server that can receive multi-part file uploads as well as building a client to upload a file.
+What you'll build
+-----------------
 
-To help you get started, we've provided an initial project structure as well as the completed project for you in GitHub:
+This Getting Started guide will walk you through the process of creating a server that can receive multi-part file uploads. You will also build a simple client to upload the file.
 
-```sh
-$ git clone https://github.com/springframework-meta/gs-upload-file.git
-```
+What you'll need
+----------------
 
-In the `inital` folder, you'll find a bare project, ready for you to copy-n-paste code snippets from this document. In the `complete` folder, you'll find the complete project code.
+- About 15 minutes
+- {!include#prereq-editor-jdk-buildtools}
 
-Before we can write code a file uploader, there's some initial project setup that's required. Or, you can skip straight to the [fun part](#creating-a-file-upload-controller).
-
-Selecting Dependencies
-----------------------
-The sample in this Getting Started Guide will leverage Spring MVC and Jetty's embedded servlet container. Therefore, the following library dependencies are needed in the project's build configuration:
-
- -	org.springframework:spring-webmvc:3.2.2.RELEASE
- -	org.eclipse.jetty:jetty-server:8.1.10.v20130312
- -	org.eclipse.jetty:jetty-servlet:8.1.10.v20130312
-
-Refer to the [Gradle Getting Started Guide]() or the [Maven Getting Started Guide]() for details on how to include these dependencies in your build.
-
-Setting Up ServletContext
-----------------------------
-To receive uploaded files, we need a server process. While we could use a full-blown servlet container installation, it's easier to spin up an embedded instance of Jetty.
-
-```java
-package fileupload;
-
-import javax.servlet.MultipartConfigElement;
-
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.servlet.DispatcherServlet;
-
-public class ServletContext {
-	
-	public static void main(String[] args) throws Exception {
-		Server server = new Server(8080);
-		
-		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-		context.setContextPath("/");
-		server.setHandler(context);
-		
-		ServletHolder holder = new ServletHolder(DispatcherServlet.class);
-		holder.getRegistration().setMultipartConfig(new MultipartConfigElement(""));
-		holder.setInitParameter("contextClass", AnnotationConfigWebApplicationContext.class.getName());
-		holder.setInitParameter("contextConfigLocation", Config.class.getName());
-		holder.setInitOrder(1);
-		context.addServlet(holder, "/*");
-		
-		server.start();
-		server.join();
-	}
-
-}
-```
-
-Our Jetty server is configured to listen on port 8080. 
-
-We are also registering an instance of Spring's `DispatcherServlet`. 
-
-We have to add in a `MultipartConfigElement` (which would be `<multipart-config>` in web.xml) to turn on multi-part file upload support. 
-
-Finally, we need to set a couple of init parameters in order to keep all configuration in pure Java.
+## {!include#how-to-complete-this-guide}
 
 
+<a name="scratch"></a>
+Set up the project
+------------------
+
+{!include#build-system-intro}
+
+{!include#create-directory-structure-hello}
+
+### Create a Maven POM
+
+    {!include:initial/pom.xml}
+
+{!include#bootstrap-starter-pom-disclaimer}
+
+
+<a name="initial"></a>
 Creating a Configuration Class
 ------------------------------
-Now that we have setup `ServletContext` as a simple, runnable application, we need to configure the Spring application context.
 
-In our Spring configuration, we'll need to enable annotation-oriented Spring MVC. And we'll also need to tell Spring where it can find our endpoint controller class. The following configuration class takes care of both of those things:
+Uploading files with Servlet 3.0 containers is really simple. You just need to register a `MultipartConfigElement` (which would be `<multipart-config>` in web.xml) to turn on multi-part file upload support.
 
-```java
-package fileupload;
+{!include:initial/src/main/java/hello/Application.java}
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.multipart.support.StandardServletMultipartResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+This class is used to configure our application, thanks to the `@Configuration` annotation.
 
-@Configuration
-@EnableWebMvc
-@ComponentScan
-public class Config {
-	
-	@Bean
-	public StandardServletMultipartResolver multipartResolver() {
-		return new StandardServletMultipartResolver();
-	}
-	
-}
-```
+You will soon build a Spring MVC controller which is why you need `@EnableWebMvc` `@ComponentScan`. That activates many key features while also enabling the ability to find the controller class.
 
-`@ComponentScan` will find the controllers based on `@Controller` annotations without having to specify them here.
+By using `@EnableAutoConfiguration`, the application will detect the `MultipartConfigElement` bean and automatically rig the application for file uploads.
 
-To support multi-part file uploads, we need to register a `StandardServletMultipartResolver` as shown above.
-
-Now that we've configured everything, let's create the endpoint controller that will serve it.
+> **Note:** [MultipartConfigElement](http://tomcat.apache.org/tomcat-7.0-doc/servletapi/javax/servlet/MultipartConfigElement.html) is a Servlet 3.0 standard element that defines the limits on uploading files. This component is supported by all compliant containers like Tomcat and Jetty. Here it's configured to upload to the folder our app runs in with no limits, but you can override these settings if you wish.
 
 Creating a File Upload Controller
-------------------------------
-In Spring, REST endpoints are just Spring MVC controllers. The following Spring MVC controller handles a `GET /upload` request by returning a simple message:
+---------------------------------
+In Spring, REST endpoints are just Spring MVC controllers. The following code provides the web app with the ability to upload files.
 
-```java
-package fileupload;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-
-@Controller
-public class FileUploadController {
-	
-	@RequestMapping(value="/upload", method=RequestMethod.GET)
-	public @ResponseBody String provideUploadInfo() {
-		return "You can upload a file by posting to this same URL.";
-	}
-	
-	@RequestMapping(value="/upload", method=RequestMethod.POST)
-	public @ResponseBody String handleFileUpload(@RequestParam("name") String name, 
-			@RequestParam("file") MultipartFile file){
-		if (!file.isEmpty()) {
-			try {
-				byte[] bytes = file.getBytes();
-				BufferedOutputStream stream = 
-						new BufferedOutputStream(new FileOutputStream(new File(name + "-uploaded")));
-				stream.write(bytes);
-				stream.close();
-				return "You successfully upload " + name + " into " + name + "-uploaded !";
-			} catch (Exception e) {
-				return "redirect:uploadFailure";
-			}
-		} else {
-			return "redirect:uploadFailure";
-		}
-	}
-	
-}
-```
+{!include:complete/src/main/java/hello/FileUploadController.java}
 
 First of all, this entire class is marked up with `@Controller` so Spring MVC can pick it up and look for routes.
 
 Next, each method has been tagged with `@RequestMapping` to flag the path and the REST action. In this case, `GET` will return back a very simple message indicating the `POST` operation is available.
 
-The `handleFileUpload` method is where the key parts are. First of all, we have it gears to handle a two-part message: name and file. We check to make sure the file is not empty, and if not, we grab the bytes. Next, we write them out through a `BufferedOutputStream`. Finally, we append **-uploaded** to the target filename to clearly see when a file has been uploaded.
+The `handleFileUpload` method is where the key parts are. First of all, you have it geared to handle a two-part message: `name` and `file`. It checks to make sure the file is not empty, and if not, it grabs the bytes. Next, it writes them out through a `BufferedOutputStream`. Finally, it appends **-uploaded** to the target filename to clearly see when a file has been uploaded.
 
-> In a real world solution, we would more likely store the files in some temporary location, a database, of perhaps a NoSQL store like Mongo's GridFS. We would also need some controls in place to avoid filling up the filesystem while also protecting us from vulnerabilities such as uploading executables.
+> In a real world solution, you would more likely store the files in some temporary location, a database, of perhaps a NoSQL store like [Mongo's GridFS](http://docs.mongodb.org/manual/core/gridfs/). You would also need some controls in place to avoid filling up the filesystem while also protecting yourself from vulnerabilities such as uploading executables as well as overwriting existing files.
 
-Building and Running the File Upload Server
--------------------------------------------
-With everything in place, let's launch our server application!
+Make the application executable
+-------------------------------
 
-```sh
-./gradlew -b server.gradle run
+Although it is possible to package this service as a traditional _web application archive_ or [WAR][u-war] file for deployment to an external application server, the simpler approach demonstrated below creates a _standalone application_. You package everything in a single, executable JAR file, driven by a good old Java `main()` method. And along the way, you use Spring's support for embedding the [Tomcat][u-tomcat] servlet container as the HTTP runtime, instead of deploying to an external instance.
+
+### Create a main class
+
+    {!include:complete/src/main/java/hello/Application.java}
+
+The `main()` method defers to the [`SpringApplication`][] helper class, providing `Application.class` as an argument to its `run()` method. This tells Spring to read the annotation metadata from `Application` and to manage it as a component in the _[Spring application context][u-application-context]_.
+
+The `@ComponentScan` annotation tells Spring to search recursively through the `hello` package and its children for classes marked directly or indirectly with Spring's [`@Component`][] annotation. This directive ensures that Spring finds and registers the `FileUploadController`, because it is marked with `@Controller`, which in turn is a kind of `@Component` annotation.
+
+The [`@EnableAutoConfiguration`][] annotation switches on reasonable default behaviors based on the content of your classpath. For example, because the application depends on the embeddable version of Tomcat (tomcat-embed-core.jar), a Tomcat server is set up and configured with reasonable defaults on your behalf. And because the application also depends on Spring MVC (spring-webmvc.jar), a Spring MVC [`DispatcherServlet`][] is configured and registered for you — no `web.xml` necessary! Because there is a `MultipartConfigElement`, it configured the `DispatcherServlet` with multipart file upload functionality. Auto-configuration is a powerful, flexible mechanism. See the [API documentation][`@EnableAutoConfiguration`] for further details.
+
+### Build an executable JAR
+
+Now that your `Application` class is ready, you simply instruct the build system to create a single, executable jar containing everything. This makes it easy to ship, version, and deploy the service as an application throughout the development lifecycle, across different environments, and so forth.
+
+Add the following configuration to your existing Maven POM:
+
+`pom.xml`
+```xml
+    <properties>
+        <start-class>hello.Application</start-class>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+            </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>hello.FileUploader</mainClass>
+					<arguments>
+						<argument>sample.txt</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+        </plugins>
+    </build>
 ```
 
-It should produce some output like this:
+The `start-class` property tells Maven to create a `META-INF/MANIFEST.MF` file with a `Main-Class: hello.Application` entry. This entry enables you to run the jar with `java -jar`.
 
-```sh
-2013-04-23 15:53:26.171:INFO:oejs.Server:jetty-8.1.10.v20130312
-2013-04-23 15:53:26.385:INFO:/:Initializing Spring FrameworkServlet 'org.springframework.web.servlet.DispatcherServlet-1177138282'
-Apr 23, 2013 3:53:26 PM org.springframework.web.servlet.FrameworkServlet initServletBean
-INFO: FrameworkServlet 'org.springframework.web.servlet.DispatcherServlet-1177138282': initialization started
-Apr 23, 2013 3:53:26 PM org.springframework.context.support.AbstractApplicationContext prepareRefresh
-INFO: Refreshing WebApplicationContext for namespace 'org.springframework.web.servlet.DispatcherServlet-1177138282-servlet': startup date [Tue Apr 23 15:53:26 CDT 2013]; root of context hierarchy
-Apr 23, 2013 3:53:26 PM org.springframework.web.context.support.AnnotationConfigWebApplicationContext loadBeanDefinitions
-INFO: Successfully resolved class for [fileupload.Config]
-Apr 23, 2013 3:53:26 PM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
-INFO: Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@28a7f23: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,config,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor,fileUploadController,org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration,requestMappingHandlerMapping,mvcContentNegotiationManager,viewControllerHandlerMapping,beanNameHandlerMapping,resourceHandlerMapping,defaultServletHandlerMapping,requestMappingHandlerAdapter,mvcConversionService,mvcValidator,httpRequestHandlerAdapter,simpleControllerHandlerAdapter,handlerExceptionResolver,multipartResolver]; root of factory hierarchy
-Apr 23, 2013 3:53:26 PM org.springframework.web.servlet.handler.AbstractHandlerMethodMapping registerHandlerMethod
-INFO: Mapped "{[/upload],methods=[GET],params=[],headers=[],consumes=[],produces=[],custom=[]}" onto public java.lang.String fileupload.FileUploadController.provideUploadInfo()
-Apr 23, 2013 3:53:26 PM org.springframework.web.servlet.handler.AbstractHandlerMethodMapping registerHandlerMethod
-INFO: Mapped "{[/upload],methods=[POST],params=[],headers=[],consumes=[],produces=[],custom=[]}" onto public java.lang.String fileupload.FileUploadController.handleFileUpload(java.lang.String,org.springframework.web.multipart.MultipartFile)
-Apr 23, 2013 3:53:27 PM org.springframework.web.servlet.FrameworkServlet initServletBean
-INFO: FrameworkServlet 'org.springframework.web.servlet.DispatcherServlet-1177138282': initialization completed in 647 ms
-2013-04-23 15:53:27.051:INFO:oejs.AbstractConnector:Started SelectChannelConnector@0.0.0.0:8080
-```
+The [Maven Shade plugin][maven-shade-plugin] extracts classes from all jars on the classpath and builds a single "über-jar", which makes it more convenient to execute and transport your service.
 
-Great! Now we have a working server that will accept file uploads. Next, let's build a client to send files.
+Because this example has both a server and a client, you need maven's exec plugin to run the file uploading client.
+
+Now run the following to produce a single executable JAR file containing all necessary dependency classes and resources:
+
+    mvn package
+
+[maven-shade-plugin]: https://maven.apache.org/plugins/maven-shade-plugin
+
+
+Run the service
+---------------
+
+Run your service with `java -jar` at the command line:
+
+    java -jar target/gs-uploading-files-complete-0.1.0.jar
+
+Logging output is displayed. The service should be up and running within a few seconds.
 
 Creating a file uploading client
 --------------------------------
+
 The easiest way to create a file uploader is using Spring MVC's `RestTemplate`.
 
-```java
-package fileupload;
+{!include:complete/src/main/java/hello/FileUploader.java}
 
-import java.io.FileNotFoundException;
+You create a `RestTemplate` and then load up a `MultiValueMap` with the name and the file. This leverages Spring's `FileSystemResource` to properly load the bytes for the file. Then it `POST`s it to the server. Because the server was coded to write a textual response straight into the HTTP response, it prints it out to the screen.
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-
-public class FileUploader {
-	
-	public static void main(String[] args) throws FileNotFoundException {
-		if (args.length == 0) {
-			System.out.println("Usage: Requires the name of a file to upload.");
-			System.exit(1);
-		}
-		
-		RestTemplate template = new RestTemplate();
-		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
-		parts.add("name", args[0]);
-		parts.add("file", new FileSystemResource(args[0]));
-		String response = template.postForObject("http://localhost:8080/upload", parts, String.class);
-		System.out.println(response);
-	}
-
-}
-```
-
-We create a `RestTemplate` and then load up a `MultiValueMap` with the name and the file. We leverage Spring's `FileSystemResource` to properly load the bytes for our file. Then we `POST` it to the server. Because the server was coded to write a textual response straight into the HTTP response, we can print it out to the screen.
-
-> In more sophisticated applications, it's possible to implement views on the server, in which case we would be seeing a page of HTML.
+> In more sophisticated applications, you probably want to use real HTML and some type of file chooser component to pick the file for upload.
 
 Uploading a file to the server
 ------------------------------
-With the server running in one window, let's open another window and run the client.
 
-```sh
-./gradlew -b client.gradle run -Pargs="sample.txt"
-```
+With the server running in one window, you need to open another window and run the client.
+
+    mvn exec:java
 
 It should produce some output like this in the client window:
 
-```sh
-You successfully upload sample.txt into sample.txt-uploaded !
-```
+    You successfully upload sample.txt into sample.txt-uploaded !
 
-Our controller doesn't print anything out, but returns the message posted to the client.
+The controller itself doesn't print anything out, but instead returns the message posted to the client.
 
-Next Steps
-----------
+Summary
+-------
+
 Congratulations! You have just written a client and server that both handle uploading files using Spring.
 
+[zip]: https://github.com/springframework-meta/gs-uploading-files/archive/master.zip
+[u-rest]: /understanding/rest
+[u-war]: /understanding/war
+[u-tomcat]: /understanding/tomcat
+[u-application-context]: /understanding/application-context
+[`@Controller`]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/stereotype/Controller.html
+[`SpringApplication`]: http://static.springsource.org/spring-bootstrap/docs/0.5.0.BUILD-SNAPSHOT/javadoc-api/org/springframework/bootstrap/SpringApplication.html
+[`@EnableAutoConfiguration`]: http://static.springsource.org/spring-bootstrap/docs/0.5.0.BUILD-SNAPSHOT/javadoc-api/org/springframework/bootstrap/context/annotation/SpringApplication.html
+[`@Component`]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/stereotype/Component.html
+[`@ResponseBody`]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html
+[`DispatcherServlet`]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html

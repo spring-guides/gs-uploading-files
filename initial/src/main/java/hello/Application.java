@@ -1,19 +1,22 @@
-package fileupload;
+package hello;
 
+import javax.servlet.MultipartConfigElement;
+
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebMvc
 @ComponentScan
-public class Config {
-	
+@EnableAutoConfiguration
+public class Application {
+
 	@Bean
-	public StandardServletMultipartResolver multipartResolver() {
-		return new StandardServletMultipartResolver();
+	MultipartConfigElement multipartConfigElement() {
+		return new MultipartConfigElement("");
 	}
-	
+
 }
