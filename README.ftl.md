@@ -1,3 +1,4 @@
+<#assign project_id="gs-uploading-files">
 
 # Getting Started: Uploading a File
 
@@ -12,116 +13,25 @@ What you'll need
 ----------------
 
  - About 15 minutes
- - A favorite text editor or IDE
- - [JDK 6][jdk] or later
- - [Maven 3.0][mvn] or later
-
-[jdk]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
-[mvn]: http://maven.apache.org/download.cgi
+ - <@prereq_editor_jdk_buildtools/>
  
 
-How to complete this guide
---------------------------
-
-Like all Spring's [Getting Started guides](/getting-started), you can start from scratch and complete each step, or you can bypass basic setup steps that are already familiar to you. Either way, you end up with working code.
-
-To **start from scratch**, move on to [Set up the project](#scratch).
-
-To **skip the basics**, do the following:
-
- - [Download][zip] and unzip the source repository for this guide, or clone it using [git](/understanding/git):
-`git clone https://github.com/springframework-meta/gs-uploading-files.git`
- - cd into `gs-uploading-files/initial`
- - Jump ahead to [Creating a Configuration Class](#initial).
-
-**When you're finished**, you can check your results against the code in `gs-uploading-files/complete`.
-[zip]: https://github.com/springframework-meta/gs-uploading-files/archive/master.zip
+## <@how_to_complete_this_guide jump_ahead='Creating a Configuration Class'/>
 
 
 <a name="scratch"></a>
 Set up the project
 ------------------
 
-First you set up a basic build script. You can use any build system you like when building apps with Spring, but the code you need to work with [Maven](https://maven.apache.org) and [Gradle](http://gradle.org) is included here. If you're not familiar with either, refer to [Getting Started with Maven](../gs-maven/README.md) or [Getting Started with Gradle](../gs-gradle/README.md).
+<@build_system_intro/>
 
-### Create the directory structure
-
-In a project directory of your choosing, create the following subdirectory structure; for example, with `mkdir -p src/main/java/hello` on *nix systems:
-
-    └── src
-        └── main
-            └── java
-                └── hello
+<@create_directory_structure_hello/>
 
 ### Create a Maven POM
 
-`pom.xml`
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+    <@snippet path="pom.xml" prefix="initial"/>
 
-    <groupId>org.springframework</groupId>
-    <artifactId>gs-uploading-files-initial</artifactId>
-    <version>0.1.0</version>
-
-    <parent>
-        <groupId>org.springframework.bootstrap</groupId>
-        <artifactId>spring-bootstrap-starters</artifactId>
-        <version>0.5.0.BUILD-SNAPSHOT</version>
-    </parent>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.bootstrap</groupId>
-            <artifactId>spring-bootstrap-web-starter</artifactId>
-        </dependency>
-    </dependencies>
-
-    <!-- TODO: remove once bootstrap goes GA -->
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>http://repo.springsource.org/milestone</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>http://repo.springsource.org/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>http://repo.springsource.org/milestone</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>http://repo.springsource.org/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-</project>
-```
-
-TODO: mention that we're using Spring Bootstrap's [_starter POMs_](../gs-bootstrap-starter) here.
-
-Note to experienced Maven users who are unaccustomed to using an external parent project: you can take it out later, it's just there to reduce the amount of code you have to write to get started.
+<@bootstrap_starter_pom_disclaimer/>
 
 
 <a name="initial"></a>
@@ -130,31 +40,7 @@ Creating a Configuration Class
 
 Uploading files with Servlet 3.0 containers is really simple. You just need to register a `MultipartConfigElement` (which would be `<multipart-config>` in web.xml) to turn on multi-part file upload support.
 
-`src/main/java/hello/Application.java`
-```java
-package hello;
-
-import javax.servlet.MultipartConfigElement;
-
-import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-@Configuration
-@EnableWebMvc
-@ComponentScan
-@EnableAutoConfiguration
-public class Application {
-
-	@Bean
-	MultipartConfigElement multipartConfigElement() {
-		return new MultipartConfigElement("");
-	}
-
-}
-```
+<@snippet path="src/main/java/hello/Application.java" prefix="initial"/>
 
 This class is used to configure our application, thanks to the `@Configuration` annotation.
 
@@ -169,50 +55,7 @@ Creating a File Upload Controller
 ---------------------------------
 In Spring, REST endpoints are just Spring MVC controllers. The following code provides the web app with the ability to upload files.
 
-`src/main/java/hello/FileUploadController.java`
-```java
-package hello;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-
-@Controller
-public class FileUploadController {
-	
-	@RequestMapping(value="/upload", method=RequestMethod.GET)
-	public @ResponseBody String provideUploadInfo() {
-		return "You can upload a file by posting to this same URL.";
-	}
-	
-	@RequestMapping(value="/upload", method=RequestMethod.POST)
-	public @ResponseBody String handleFileUpload(@RequestParam("name") String name, 
-			@RequestParam("file") MultipartFile file){
-		if (!file.isEmpty()) {
-			try {
-				byte[] bytes = file.getBytes();
-				BufferedOutputStream stream = 
-						new BufferedOutputStream(new FileOutputStream(new File(name + "-uploaded")));
-				stream.write(bytes);
-				stream.close();
-				return "You successfully upload " + name + " into " + name + "-uploaded !";
-			} catch (Exception e) {
-				return "You failed to upload " + name + " => " + e.getMessage();
-			}
-		} else {
-			return "You failed to upload " + name + " because the file was empty.";
-		}
-	}
-	
-}
-```
+<@snippet path="src/main/java/hello/FileUploadController.java" prefix="complete"/>
 
 First of all, this entire class is marked up with `@Controller` so Spring MVC can pick it up and look for routes.
 
@@ -230,35 +73,7 @@ Although it is possible to package this service as a traditional _web applicatio
 
 ### Create a main class
 
-`src/main/java/hello/Application.java`
-```java
-package hello;
-
-import javax.servlet.MultipartConfigElement;
-
-import org.springframework.bootstrap.SpringApplication;
-import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-@Configuration
-@EnableWebMvc
-@ComponentScan
-@EnableAutoConfiguration
-public class Application {
-
-	@Bean
-	MultipartConfigElement multipartConfigElement() {
-		return new MultipartConfigElement("");
-	}
-	
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
-}
-```
+<@snippet path="src/main/java/hello/Application.java" prefix="complete"/>
 
 The `main()` method defers to the [`SpringApplication`][] helper class, providing `Application.class` as an argument to its `run()` method. This tells Spring to read the annotation metadata from `Application` and to manage it as a component in the _[Spring application context][u-application-context]_.
 
@@ -327,7 +142,7 @@ Run the service
 Run your service with `java -jar` at the command line:
 
 ```sh
-$ java -jar target/gs-uploading-files-complete-0.1.0.jar
+$ java -jar target/${project_id}-complete-0.1.0.jar
 ```
 
 Logging output is displayed. The service should be up and running within a few seconds.
@@ -338,35 +153,7 @@ Creating a file uploading client
 
 The easiest way to create a file uploader is using Spring MVC's `RestTemplate`.
 
-`src/main/java/hello/FileUploader.java`
-```java
-package hello;
-
-import java.io.FileNotFoundException;
-
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-
-public class FileUploader {
-	
-	public static void main(String[] args) throws FileNotFoundException {
-		if (args.length == 0) {
-			System.out.println("Usage: Requires the name of a file to upload.");
-			System.exit(1);
-		}
-		
-		RestTemplate template = new RestTemplate();
-		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
-		parts.add("name", args[0]);
-		parts.add("file", new FileSystemResource(args[0]));
-		String response = template.postForObject("http://localhost:8080/upload", parts, String.class);
-		System.out.println(response);
-	}
-
-}
-```
+<@snippet path="src/main/java/hello/FileUploader.java" prefix="complete"/>
 
 You create a `RestTemplate` and then load up a `MultiValueMap` with the name and the file. This leverages Spring's `FileSystemResource` to properly load the bytes for the file. Then it `POST`s it to the server. Because the server was coded to write a textual response straight into the HTTP response, it prints it out to the screen.
 
