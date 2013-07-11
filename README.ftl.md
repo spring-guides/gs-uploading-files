@@ -143,11 +143,11 @@ Logging output is displayed. The service should be up and running within a few s
 Create a client and upload a file
 ----------------------------------
 
-Up to this point, you have built a server application capable of receiving file uploads. It would be of much use unless you also build a client application to upload a file. The easiest way to do that is by using Spring MVC's `RestTemplate`.
+Up to this point, you have built a server application capable of receiving file uploads. It would not be of much use unless you also build a client application to upload a file. The easiest way to do that is by using Spring MVC's `RestTemplate`.
 
     <@snippet path="src/main/java/hello/FileUploader.java" prefix="complete"/>
 
-This client application creates a `RestTemplate` and then loads up a `MultiValueMap` with the name and the file. This leverages Spring's `FileSystemResource` class to properly load the bytes for the file. Then the template uses it's `postForObject` method to `POST` the file to the server. Because the server was coded to write a textual message straight into the HTTP response, the client application prints that message out to the console.
+This client application creates a `RestTemplate` and then loads up a `MultiValueMap` with the name and the file. This leverages Spring's `FileSystemResource` class to properly load the bytes for the file. Then the template uses its `postForObject` method to `POST` the file to the server. Because the server was coded to write a textual message straight into the HTTP response, the client application prints that message out to the console.
 
 > **Note**: In more sophisticated applications, you probably want to use real HTML and some type of file chooser component to pick the file for upload.
 
