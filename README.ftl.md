@@ -38,15 +38,15 @@ Set up the project
 Create a configuration class
 ------------------------------
 
-To upload files with Servlet 3.0 containers, you need to register a `MultipartConfigElement` class (which would be `<multipart-config>` in web.xml) to turn on multi-part file upload support.
+To upload files with Servlet 3.0 containers, you need to register a `MultipartConfigElement` class (which would be `<multipart-config>` in web.xml).
 
-<@snippet path="src/main/java/hello/Application.java" prefix="initial"/>
+    <@snippet path="src/main/java/hello/Application.java" prefix="initial"/>
 
-This class is used to configure the server application, thanks to the `@Configuration` annotation.
+This class is used to configure the server application that will receive file uploads, thanks to the `@Configuration` annotation.
 
-You will soon build a Spring MVC controller which is why you need `@EnableWebMvc` `@ComponentScan`. It activates many key features while also enabling the ability to find the controller class.
+You will soon add a Spring MVC controller which is why you need `@EnableWebMvc` `@ComponentScan`. It activates many key features while also enabling the ability to find the controller class.
 
-Using `@EnableAutoConfiguration`, the application will detect the `MultipartConfigElement`bean and automatically rig the application for file uploads.
+Using `@EnableAutoConfiguration`, the application will detect the `MultipartConfigElement` bean and rig itself for file uploads.
 
 > **Note:** [MultipartConfigElement](http://tomcat.apache.org/tomcat-7.0-doc/servletapi/javax/servlet/MultipartConfigElement.html) is a Servlet 3.0 standard element that defines the limits on uploading files. This component is supported by all compliant containers like Tomcat and Jetty. Here it's configured to upload to the folder the app runs in with no limits, but you can override these settings if you wish.
 
@@ -55,7 +55,7 @@ Create a file upload controller
 ---------------------------------
 In Spring, REST endpoints are just Spring MVC controllers. The following code provides the web app with the ability to upload files.
 
-<@snippet path="src/main/java/hello/FileUploadController.java" prefix="complete"/>
+    <@snippet path="src/main/java/hello/FileUploadController.java" prefix="complete"/>
 
 The entire class is marked up with `@Controller` so Spring MVC can pick it up and look for routes.
 
@@ -73,7 +73,7 @@ Although it is possible to package this service as a traditional [WAR][u-war] fi
 
 ### Create a main class
 
-<@snippet path="src/main/java/hello/Application.java" prefix="complete"/>
+    <@snippet path="src/main/java/hello/Application.java" prefix="complete"/>
 
 The `main()` method defers to the [`SpringApplication`][] helper class, providing `Application.class` as an argument to its `run()` method. This tells Spring to read the annotation metadata from `Application` and to manage it as a component in the _[Spring application context][u-application-context]_.
 
@@ -135,45 +135,29 @@ $ mvn package
 
 [maven-shade-plugin]: https://maven.apache.org/plugins/maven-shade-plugin
 
-
-Run the service
----------------
-
-Run your service with `java -jar` at the command line:
-
-```sh
-$ java -jar target/${project_id}-complete-0.1.0.jar
-```
+<@run_the_application module="service"/>
 
 Logging output is displayed. The service should be up and running within a few seconds.
 
 
-Create a client to upload the file
+Create a client and upload a file
 ----------------------------------
 
-The easiest way to create a file uploader is using Spring MVC's `RestTemplate`.
+Up to this point, you have built a server application capable of receiving file uploads. It would be of much use unless you also build a client application to upload a file. The easiest way to do that is by using Spring MVC's `RestTemplate`.
 
-<@snippet path="src/main/java/hello/FileUploader.java" prefix="complete"/>
+    <@snippet path="src/main/java/hello/FileUploader.java" prefix="complete"/>
 
-You create a `RestTemplate` and then load up a `MultiValueMap` with the name and the file.This leverages Spring's `FileSystemResource` class to properly load the bytes for the file. Then it `POST`s the file to the server. Because the server was coded to write a textual response straight into the HTTP response, the server prints it out to the screen.
+This client application creates a `RestTemplate` and then loads up a `MultiValueMap` with the name and the file. This leverages Spring's `FileSystemResource` class to properly load the bytes for the file. Then the template uses it's `postForObject` method to `POST` the file to the server. Because the server was coded to write a textual message straight into the HTTP response, the client application prints that message out to the console.
 
 > **Note**: In more sophisticated applications, you probably want to use real HTML and some type of file chooser component to pick the file for upload.
 
+With the server running in one window, you need to open another window to run the client.
 
-Upload a file to the server
-------------------------------
-
-With the server running in one window, you need to open another window and run the client.
-
-```sh
-$ mvn exec:java
-```
+    $ mvn exec:java
 
 It should produce some output like this in the client window:
 
-```sh
-You successfully upload sample.txt into sample.txt-uploaded !
-```
+    You successfully upload sample.txt into sample.txt-uploaded !
 
 The controller itself doesn't print anything out, but instead returns the message posted to the client.
 

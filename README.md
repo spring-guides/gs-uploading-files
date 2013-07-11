@@ -5,7 +5,7 @@
 What you'll build
 -----------------
 
-This Getting Started guide will walk you through the process of creating a server that can receive multi-part file uploads. You will also build a simple client to upload the file.
+This guide walks you through the process of creating a server that can receive multi-part file uploads. You will also build a simple client to upload a file.
 
 
 What you'll need
@@ -32,7 +32,7 @@ To **skip the basics**, do the following:
  - [Download][zip] and unzip the source repository for this guide, or clone it using [git](/understanding/git):
 `git clone https://github.com/springframework-meta/gs-uploading-files.git`
  - cd into `gs-uploading-files/initial`
- - Jump ahead to [Creating a Configuration Class](#initial).
+ - Jump ahead to [Create a configuration class](#initial).
 
 **When you're finished**, you can check your results against the code in `gs-uploading-files/complete`.
 [zip]: https://github.com/springframework-meta/gs-uploading-files/archive/master.zip
@@ -125,10 +125,10 @@ Note to experienced Maven users who are unaccustomed to using an external parent
 
 
 <a name="initial"></a>
-Creating a Configuration Class
+Create a configuration class
 ------------------------------
 
-Uploading files with Servlet 3.0 containers is really simple. You just need to register a `MultipartConfigElement` (which would be `<multipart-config>` in web.xml) to turn on multi-part file upload support.
+To upload files with Servlet 3.0 containers, you need to register a `MultipartConfigElement` class (which would be `<multipart-config>` in web.xml).
 
 `src/main/java/hello/Application.java`
 ```java
@@ -156,16 +156,16 @@ public class Application {
 }
 ```
 
-This class is used to configure our application, thanks to the `@Configuration` annotation.
+This class is used to configure the server application that will receive file uploads, thanks to the `@Configuration` annotation.
 
-You will soon build a Spring MVC controller which is why you need `@EnableWebMvc` `@ComponentScan`. That activates many key features while also enabling the ability to find the controller class.
+You will soon add a Spring MVC controller which is why you need `@EnableWebMvc` `@ComponentScan`. It activates many key features while also enabling the ability to find the controller class.
 
-By using `@EnableAutoConfiguration`, the application will detect the `MultipartConfigElement` bean and automatically rig the application for file uploads.
+Using `@EnableAutoConfiguration`, the application will detect the `MultipartConfigElement` bean and rig itself for file uploads.
 
-> **Note:** [MultipartConfigElement](http://tomcat.apache.org/tomcat-7.0-doc/servletapi/javax/servlet/MultipartConfigElement.html) is a Servlet 3.0 standard element that defines the limits on uploading files. This component is supported by all compliant containers like Tomcat and Jetty. Here it's configured to upload to the folder our app runs in with no limits, but you can override these settings if you wish.
+> **Note:** [MultipartConfigElement](http://tomcat.apache.org/tomcat-7.0-doc/servletapi/javax/servlet/MultipartConfigElement.html) is a Servlet 3.0 standard element that defines the limits on uploading files. This component is supported by all compliant containers like Tomcat and Jetty. Here it's configured to upload to the folder the app runs in with no limits, but you can override these settings if you wish.
 
 
-Creating a File Upload Controller
+Create a file upload controller
 ---------------------------------
 In Spring, REST endpoints are just Spring MVC controllers. The following code provides the web app with the ability to upload files.
 
@@ -214,19 +214,19 @@ public class FileUploadController {
 }
 ```
 
-First of all, this entire class is marked up with `@Controller` so Spring MVC can pick it up and look for routes.
+The entire class is marked up with `@Controller` so Spring MVC can pick it up and look for routes.
 
-Next, each method has been tagged with `@RequestMapping` to flag the path and the REST action. In this case, `GET` will return back a very simple message indicating the `POST` operation is available.
+Each method is tagged with `@RequestMapping` to flag the path and the REST action. In this case, `GET` returns a very simple message indicating the `POST` operation is available.
 
-The `handleFileUpload` method is where the key parts are. First of all, you have it geared to handle a two-part message: `name` and `file`. It checks to make sure the file is not empty, and if not, it grabs the bytes. Next, it writes them out through a `BufferedOutputStream`. Finally, it appends **-uploaded** to the target filename to clearly see when a file has been uploaded.
+The `handleFileUpload` method is geared to handle a two-part message: `name` and `file`. It checks to make sure the file is not empty, and if it is empty, the method grabs the bytes. Next, it writes them out through a `BufferedOutputStream`. Finally, it appends **-uploaded** to the target filename to clearly show when a file has been uploaded.
 
-> **Note**: In a real world solution, you would more likely store the files in some temporary location, a database, of perhaps a NoSQL store like [Mongo's GridFS](http://docs.mongodb.org/manual/core/gridfs/). You would also need some controls in place to avoid filling up the filesystem while also protecting yourself from vulnerabilities such as uploading executables as well as overwriting existing files.
+> **Note**: In a production scenario, you more likely would store the files in a temporary location, a database, or perhaps a NoSQL store like [Mongo's GridFS](http://docs.mongodb.org/manual/core/gridfs/). You also need controls in place to avoid filling up the filesystem while also protecting yourself from vulnerabilities such as uploading executables and overwriting existing files.
 
 
 Make the application executable
 -------------------------------
 
-Although it is possible to package this service as a traditional _web application archive_ or [WAR][u-war] file for deployment to an external application server, the simpler approach demonstrated below creates a _standalone application_. You package everything in a single, executable JAR file, driven by a good old Java `main()` method. And along the way, you use Spring's support for embedding the [Tomcat][u-tomcat] servlet container as the HTTP runtime, instead of deploying to an external instance.
+Although it is possible to package this service as a traditional [WAR][u-war] file for deployment to an external application server, the simpler approach demonstrated below creates a _standalone application_. You package everything in a single, executable JAR file, driven by a good old Java `main()` method. And along the way, you use Spring's support for embedding the [Tomcat][u-tomcat] servlet container as the HTTP runtime, instead of deploying to an external instance.
 
 ### Create a main class
 
@@ -312,7 +312,7 @@ The [Maven Shade plugin][maven-shade-plugin] extracts classes from all jars on t
 
 Because this example has both a server and a client, you need maven's exec plugin to run the file uploading client.
 
-Now run the following to produce a single executable JAR file containing all necessary dependency classes and resources:
+Now run the following to produce a single executable JAR file that contains all necessary dependency classes and resources:
 
 ```sh
 $ mvn package
@@ -320,23 +320,21 @@ $ mvn package
 
 [maven-shade-plugin]: https://maven.apache.org/plugins/maven-shade-plugin
 
-
 Run the service
----------------
-
+-------------------
 Run your service with `java -jar` at the command line:
 
-```sh
-$ java -jar target/gs-uploading-files-complete-0.1.0.jar
-```
+    java -jar target/gs-uploading-files-0.1.0.jar
+
+
 
 Logging output is displayed. The service should be up and running within a few seconds.
 
 
-Creating a file uploading client
---------------------------------
+Create a client and upload a file
+----------------------------------
 
-The easiest way to create a file uploader is using Spring MVC's `RestTemplate`.
+Up to this point, you have built a server application capable of receiving file uploads. It would be of much use unless you also build a client application to upload a file. The easiest way to do that is by using Spring MVC's `RestTemplate`.
 
 `src/main/java/hello/FileUploader.java`
 ```java
@@ -368,25 +366,17 @@ public class FileUploader {
 }
 ```
 
-You create a `RestTemplate` and then load up a `MultiValueMap` with the name and the file. This leverages Spring's `FileSystemResource` to properly load the bytes for the file. Then it `POST`s it to the server. Because the server was coded to write a textual response straight into the HTTP response, it prints it out to the screen.
+This client application creates a `RestTemplate` and then loads up a `MultiValueMap` with the name and the file. This leverages Spring's `FileSystemResource` class to properly load the bytes for the file. Then the template uses it's `postForObject` method to `POST` the file to the server. Because the server was coded to write a textual message straight into the HTTP response, the client application prints that message out to the console.
 
 > **Note**: In more sophisticated applications, you probably want to use real HTML and some type of file chooser component to pick the file for upload.
 
+With the server running in one window, you need to open another window to run the client.
 
-Uploading a file to the server
-------------------------------
-
-With the server running in one window, you need to open another window and run the client.
-
-```sh
-$ mvn exec:java
-```
+    $ mvn exec:java
 
 It should produce some output like this in the client window:
 
-```sh
-You successfully upload sample.txt into sample.txt-uploaded !
-```
+    You successfully upload sample.txt into sample.txt-uploaded !
 
 The controller itself doesn't print anything out, but instead returns the message posted to the client.
 
@@ -394,7 +384,7 @@ The controller itself doesn't print anything out, but instead returns the messag
 Summary
 -------
 
-Congratulations! You have just written a client and server that both handle uploading files using Spring.
+Congratulations! You have just written a client and server that use Spring to handle file uploads.
 
 
 [u-rest]: /understanding/rest
