@@ -63,7 +63,7 @@ In a project directory of your choosing, create the following subdirectory struc
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.springframework</groupId>
-    <artifactId>gs-uploading-files-initial</artifactId>
+    <artifactId>gs-uploading-files</artifactId>
     <version>0.1.0</version>
 
     <parent>
