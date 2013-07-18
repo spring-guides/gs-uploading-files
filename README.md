@@ -23,7 +23,7 @@ What you'll need
 How to complete this guide
 --------------------------
 
-Like all Spring's [Getting Started guides](/getting-started), you can start from scratch and complete each step, or you can bypass basic setup steps that are already familiar to you. Either way, you end up with working code.
+Like all Spring's [Getting Started guides](guides/gs), you can start from scratch and complete each step, or you can bypass basic setup steps that are already familiar to you. Either way, you end up with working code.
 
 To **start from scratch**, move on to [Set up the project](#scratch).
 
@@ -31,7 +31,7 @@ To **skip the basics**, do the following:
 
  - [Download][zip] and unzip the source repository for this guide, or clone it using [git](/understanding/git):
 `git clone https://github.com/springframework-meta/gs-uploading-files.git`
- - cd into `gs-uploading-files/initial`
+ - cd into `gs-uploading-files/initial`.
  - Jump ahead to [Create a configuration class](#initial).
 
 **When you're finished**, you can check your results against the code in `gs-uploading-files/complete`.
@@ -42,7 +42,7 @@ To **skip the basics**, do the following:
 Set up the project
 ------------------
 
-First you set up a basic build script. You can use any build system you like when building apps with Spring, but the code you need to work with [Maven](https://maven.apache.org) and [Gradle](http://gradle.org) is included here. If you're not familiar with either, refer to [Building Java Projects with Maven](../gs-maven/README.md) or [Building Java Projects with Gradle](../gs-gradle/README.md).
+First you set up a basic build script. You can use any build system you like when building apps with Spring, but the code you need to work with [Maven](https://maven.apache.org) and [Gradle](http://gradle.org) is included here. If you're not familiar with either, refer to [Building Java Projects with Maven](guides/gs/maven/content) or [Building Java Projects with Gradle](guides/gs/gradle/content).
 
 ### Create the directory structure
 
