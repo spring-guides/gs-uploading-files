@@ -1,8 +1,5 @@
 <#assign project_id="gs-uploading-files">
 
-# Getting Started: Uploading a File
-
-
 What you'll build
 -----------------
 

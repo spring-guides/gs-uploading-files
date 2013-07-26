@@ -1,7 +1,4 @@
 
-# Getting Started: Uploading a File
-
-
 What you'll build
 -----------------
 
