@@ -2,8 +2,8 @@ package hello;
 
 import javax.servlet.MultipartConfigElement;
 
-import org.springframework.autoconfigure.EnableAutoConfiguration;
-import org.springframework.bootstrap.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

@@ -8,8 +8,8 @@
     <version>0.1.0</version>
 
     <parent>
-        <groupId>org.springframework.zero</groupId>
-        <artifactId>spring-starter-parent</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-up-parent</artifactId>
         <version>0.5.0.BUILD-SNAPSHOT</version>
     </parent>
 
@@ -20,8 +20,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.zero</groupId>
-                <artifactId>spring-package-maven-plugin</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -38,8 +38,8 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.springframework.zero</groupId>
-            <artifactId>spring-starter-web</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-up-web</artifactId>
         </dependency>
     </dependencies>
 
