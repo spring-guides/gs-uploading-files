@@ -76,7 +76,6 @@ In a project directory of your choosing, create the following subdirectory struc
         </dependency>
     </dependencies>
 
-    <!-- TODO: remove once bootstrap goes GA -->
     <repositories>
         <repository>
             <id>spring-milestones</id>
