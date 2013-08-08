@@ -7,8 +7,8 @@ There's more to Spring web development than what is presented here. You can cont
 * [Validating Form Input][gs-validating-form-input]
 * [Securing a Web Application][gs-securing-web]
 
-[gs-validating-form-input]: /guides/gs/validating-form-input/content
-[gs-securing-web]: /guides/gs/securing-web/content
+[gs-validating-form-input]: /guides/gs/validating-form-input/
+[gs-securing-web]: /guides/gs/securing-web/
 
 ### Tutorials
 
