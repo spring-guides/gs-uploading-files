@@ -1,9 +1,10 @@
 <#assign project_id="gs-uploading-files">
+This guide walks you through the process of creating a server that can receive multi-part file uploads.
 
 What you'll build
 -----------------
 
-This guide walks you through the process of creating a server that can receive multi-part file uploads. You will also build a simple client to upload a file.
+You will create a Spring MVC application that accepts file uploads. You will also build a simple client to upload a test file.
 
 
 What you'll need
