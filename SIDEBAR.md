@@ -21,5 +21,5 @@ There's more to Spring web development than what is presented here. You can cont
 * [REST][u-rest]
 * [JSON][u-json]
 
-[u-rest]: /understanding/rest
-[u-json]: /understanding/json
+[u-rest]: /understanding/REST
+[u-json]: /understanding/JSON
