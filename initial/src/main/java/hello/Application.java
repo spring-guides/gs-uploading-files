@@ -14,9 +14,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableAutoConfiguration
 public class Application {
 
-	@Bean
-	MultipartConfigElement multipartConfigElement() {
-		return new MultipartConfigElement("");
-	}
+    @Bean
+    MultipartConfigElement multipartConfigElement() {
+        return new MultipartConfigElement("");
+    }
 
 }
