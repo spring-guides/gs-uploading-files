@@ -12,9 +12,9 @@ There's more to Spring web development than what is presented here. You can cont
 
 ### Tutorials
 
-* [Tutorial TBD][tut-tbd]
+* [Designing and Implementing RESTful Web Services with Spring][tut-rest]
 
-[tut-tbd]: /guides/tutorials/tbd
+[tut-rest]: /guides/tutorials/rest
 
 ### Concepts and Technologies
 
