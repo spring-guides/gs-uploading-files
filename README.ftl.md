@@ -25,9 +25,9 @@ Set up the project
 
 <@create_directory_structure_hello/>
 
-### Create a Maven POM
+### Create a Gradle build file
 
-    <@snippet path="pom.xml" prefix="initial"/>
+    <@snippet path="build.gradle" prefix="initial"/>
 
 <@bootstrap_starter_pom_disclaimer/>
 
@@ -83,59 +83,33 @@ The [`@EnableAutoConfiguration`][] annotation switches on reasonable default beh
 
 Now that your `Application` class is ready, you simply instruct the build system to create a single, executable jar containing everything. This makes it easy to ship, version, and deploy the service as an application throughout the development lifecycle, across different environments, and so forth.
 
-Add the following configuration to your existing Maven POM:
+Add the following configuration to your existing Gradle build file:
 
-`pom.xml`
-```xml
-    <properties>
-        <start-class>hello.Application</start-class>
-    </properties>
+`build.gradle`
+```groovy
+buildscript {
+    …
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.BUILD-SNAPSHOT")
+    }
+}
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-            </plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>java</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<mainClass>hello.FileUploader</mainClass>
-					<arguments>
-						<argument>sample.txt</argument>
-					</arguments>
-				</configuration>
-			</plugin>
-        </plugins>
-    </build>
+apply plugin: 'spring-boot'
 ```
 
-The `start-class` property tells Maven to create a `META-INF/MANIFEST.MF` file with a `Main-Class: hello.Application` entry. This entry enables you to run the jar with `java -jar`.
+The [Spring Boot gradle plugin][spring-boot-gradle-plugin] collects all the jars on the classpath and builds a single "über-jar", which makes it more convenient to execute and transport your service. It also searches for the `public static void main()` method to flag as a runnable class.
 
-The [Maven Shade plugin][maven-shade-plugin] extracts classes from all jars on the classpath and builds a single "über-jar", which makes it more convenient to execute and transport your service.
-
-Because this example has both a server and a client, you need maven's exec plugin to run the file uploading client.
-
-Now run the following to produce a single executable JAR file that contains all necessary dependency classes and resources:
+Now run the following command to produce a single executable JAR file containing all necessary dependency classes and resources:
 
 ```sh
-$ mvn package
+$ ./gradlew build
 ```
 
-[maven-shade-plugin]: https://maven.apache.org/plugins/maven-shade-plugin
+[spring-boot-gradle-plugin]: https://github.com/SpringSource/spring-boot/tree/master/spring-boot-tools/spring-boot-gradle-plugin
 
 <@run_the_application module="service"/>
 
-Logging output is displayed. The service should be up and running within a few seconds.
+That runs the server-side piece that receives file uploads. Logging output is displayed. The service should be up and running within a few seconds.
 
 
 Create a client and upload a file
@@ -149,13 +123,27 @@ This client application creates a `RestTemplate` and then loads up a `MultiValue
 
 > **Note**: In more sophisticated applications, you probably want to use real HTML and some type of file chooser component to pick the file for upload.
 
+You just coded some client code to upload a sample file. To run the code, add this to your Gradle build file:
+
+```groovy
+apply plugin: 'application'
+mainClassName = "hello.FileUploader"
+run {
+    args 'sample.txt'
+}
+```
+
 With the server running in one window, you need to open another window to run the client.
 
-    $ mvn exec:java
+```sh
+$ ./gradlew run
+```
 
 It should produce some output like this in the client window:
 
-    You successfully upload sample.txt into sample.txt-uploaded !
+```sh
+You successfully uploaded sample.txt into sample.txt-uploaded !
+```
 
 The controller itself doesn't print anything out, but instead returns the message posted to the client.
 

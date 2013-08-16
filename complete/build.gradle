@@ -13,6 +13,12 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
+apply plugin: 'application'
+mainClassName = "hello.FileUploader"
+run {
+    args 'sample.txt'
+}
+
 jar {
     baseName = 'gs-uploading-files'
     version =  '0.1.0'
