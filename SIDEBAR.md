@@ -1,8 +1,10 @@
-## Related Resources
+## Related resources
 
 There's more to Spring web development than what is presented here. You can continue to explore Spring MVC with the following resources.
 
+
 ### Getting Started guides
+
 
 * [Validating Form Input][gs-validating-form-input]
 * [Securing a Web Application][gs-securing-web]
