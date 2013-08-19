@@ -1,6 +1,6 @@
 ## Related Resources
 
-There's more to Spring web development than what is presented here. You can continue your exploration of Spring MVC with the following resources.
+There's more to Spring web development than what is presented here. You can continue to explore Spring MVC with the following resources.
 
 ### Getting Started guides
 
@@ -16,7 +16,7 @@ There's more to Spring web development than what is presented here. You can cont
 
 [tut-rest]: /guides/tutorials/rest
 
-### Concepts and Technologies
+### Concepts and technologies
 
 * [REST][u-rest]
 * [JSON][u-json]
