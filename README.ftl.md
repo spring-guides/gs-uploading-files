@@ -1,5 +1,5 @@
 <#assign project_id="gs-uploading-files">
-This guide walks you through the process of creating a server that can receive multi-part file uploads.
+This guide walks you through the process of creating a server application that can receive multi-part file uploads.
 
 What you'll build
 -----------------
@@ -42,11 +42,11 @@ To upload files with Servlet 3.0 containers, you need to register a `MultipartCo
 
 This class is used to configure the server application that will receive file uploads, thanks to the `@Configuration` annotation.
 
-You will soon add a Spring MVC controller which is why you need `@EnableWebMvc` `@ComponentScan`. It activates many key features while also enabling the ability to find the controller class.
+You will soon add a Spring MVC controller, which is why you need `@EnableWebMvc` `@ComponentScan`. It activates many key features, including the ability to find the controller class.
 
-Using `@EnableAutoConfiguration`, the application will detect the `MultipartConfigElement` bean and rig itself for file uploads.
+Using `@EnableAutoConfiguration`, the application will detect the `MultipartConfigElement` bean and make itself ready for file uploads.
 
-> **Note:** [MultipartConfigElement](http://tomcat.apache.org/tomcat-7.0-doc/servletapi/javax/servlet/MultipartConfigElement.html) is a Servlet 3.0 standard element that defines the limits on uploading files. This component is supported by all compliant containers like Tomcat and Jetty. Here it's configured to upload to the folder the app runs in with no limits, but you can override these settings if you wish.
+> **Note:** [MultipartConfigElement](http://tomcat.apache.org/tomcat-7.0-doc/servletapi/javax/servlet/MultipartConfigElement.html) is a Servlet 3.0 standard element that defines the limits on uploading files. This component is supported by all compliant containers like Tomcat and Jetty. Here it's configured to upload to the folder the application runs in with no limits, but you can override these settings if you wish.
 
 
 Create a file upload controller
@@ -69,7 +69,7 @@ Make the application executable
 
 Although it is possible to package this service as a traditional [WAR][u-war] file for deployment to an external application server, the simpler approach demonstrated below creates a _standalone application_. You package everything in a single, executable JAR file, driven by a good old Java `main()` method. And along the way, you use Spring's support for embedding the [Tomcat][u-tomcat] servlet container as the HTTP runtime, instead of deploying to an external instance.
 
-### Create a main class
+### Create an Application class
 
     <@snippet path="src/main/java/hello/Application.java" prefix="complete"/>
 
@@ -115,7 +115,7 @@ That runs the server-side piece that receives file uploads. Logging output is di
 Create a client and upload a file
 ----------------------------------
 
-Up to this point, you have built a server application capable of receiving file uploads. It would not be of much use unless you also build a client application to upload a file. The easiest way to do that is by using Spring MVC's `RestTemplate`.
+So far, you have built a server application capable of receiving file uploads. It would not be of much use unless you also build a client application to upload a file. The easiest way to do that is by using Spring MVC's `RestTemplate`.
 
     <@snippet path="src/main/java/hello/FileUploader.java" prefix="complete"/>
 
