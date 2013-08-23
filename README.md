@@ -54,6 +54,7 @@ In a project directory of your choosing, create the following subdirectory struc
                 └── hello
 
 ### Create a Gradle build file
+Below is the [initial Gradle build file](https://github.com/springframework-meta/gs-uploading-files/blob/master/initial/build.gradle). But you can also use Maven. The pom.xml file is included [right here](https://github.com/springframework-meta/gs-uploading-files/blob/master/initial/pom.xml).
 
 `build.gradle`
 ```gradle
@@ -87,6 +88,8 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.7'
 }
 ```
+    
+    
 
 This guide is using [Spring Boot's starter POMs](/guides/gs/spring-boot/).
 
@@ -234,24 +237,33 @@ The `@ComponentScan` annotation tells Spring to search recursively through the `
 The [`@EnableAutoConfiguration`][] annotation switches on reasonable default behaviors based on the content of your classpath. For example, because the application depends on the embeddable version of Tomcat (tomcat-embed-core.jar), a Tomcat server is set up and configured with reasonable defaults on your behalf. And because the application also depends on Spring MVC (spring-webmvc.jar), a Spring MVC [`DispatcherServlet`][] is configured and registered for you — no `web.xml` necessary! Because there is a `MultipartConfigElement`, it configured the `DispatcherServlet` with multipart file upload functionality. Auto-configuration is a powerful, flexible mechanism. See the [API documentation][`@EnableAutoConfiguration`] for further details.
 
 ### Build an executable JAR
-
 Now that your `Application` class is ready, you simply instruct the build system to create a single, executable jar containing everything. This makes it easy to ship, version, and deploy the service as an application throughout the development lifecycle, across different environments, and so forth.
 
-Add the following configuration to your existing Gradle build file:
+Below are the Gradle steps, but if you are using Maven, you can find the updated pom.xml [right here](https://github.com/springframework-meta/gs-uploading-files/blob/master/complete/pom.xml) and build it by typing `mvn clean package`.
 
-`build.gradle`
+Update your Gradle `build.gradle` file's `buildscript` section, so that it looks like this:
+
 ```groovy
 buildscript {
-    …
+    repositories {
+        maven { url "http://repo.springsource.org/libs-snapshot" }
+        mavenLocal()
+    }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.BUILD-SNAPSHOT")
     }
 }
-
-apply plugin: 'spring-boot'
 ```
 
-The [Spring Boot gradle plugin][spring-boot-gradle-plugin] collects all the jars on the classpath and builds a single "über-jar", which makes it more convenient to execute and transport your service. It also searches for the `public static void main()` method to flag as a runnable class.
+Further down inside `build.gradle`, add the following to the list of applied plugins:
+
+```groovy
+apply plugin: 'spring-boot'
+```
+You can see the final version of `build.gradle` [right here]((https://github.com/springframework-meta/gs-uploading-files/blob/master/complete/build.gradle).
+
+The [Spring Boot gradle plugin][spring-boot-gradle-plugin] collects all the jars on the classpath and builds a single "über-jar", which makes it more convenient to execute and transport your service.
+It also searches for the `public static void main()` method to flag as a runnable class.
 
 Now run the following command to produce a single executable JAR file containing all necessary dependency classes and resources:
 
@@ -259,15 +271,31 @@ Now run the following command to produce a single executable JAR file containing
 $ ./gradlew build
 ```
 
-[spring-boot-gradle-plugin]: https://github.com/SpringSource/spring-boot/tree/master/spring-boot-tools/spring-boot-gradle-plugin
+If you are using Gradle, you can run the JAR by typing:
 
-Run the service
--------------------
-Run your service with `java -jar` at the command line:
+```sh
+$ java -jar build/libs/gs-uploading-files-0.1.0.jar
+```
+
+If you are using Maven, you can run the JAR by typing:
 
 ```sh
 $ java -jar target/gs-uploading-files-0.1.0.jar
 ```
+
+[spring-boot-gradle-plugin]: https://github.com/SpringSource/spring-boot/tree/master/spring-boot-tools/spring-boot-gradle-plugin
+
+> **Note:** The procedure above will create a runnable JAR. You can also opt to [build a classic WAR file](/guides/gs/convert-jar-to-war/) instead.
+
+Run the service
+-------------------
+If you are using Gradle, you can run your service at the command line this way:
+
+```sh
+$ ./gradlew clean build && java -jar build/libs/gs-uploading-files-0.1.0.jar
+```
+
+> **Note:** If you are using Maven, you can run your service by typing `mvn clean package && java -jar target/gs-uploading-files-0.1.0.jar`.
 
 
 That runs the server-side piece that receives file uploads. Logging output is displayed. The service should be up and running within a few seconds.
@@ -322,11 +350,15 @@ run {
 }
 ```
 
+> **Note:** If you clicked on the link up above to view the final `build.gradle` file, you will have already seen this. There is similar material added to the `pom.xml` file.
+
 With the server running in one window, you need to open another window to run the client.
 
 ```sh
 $ ./gradlew run
 ```
+
+> **Note:** If you are using Maven, you can run the client by typing `mvn package exec:java`.
 
 It should produce some output like this in the client window:
 

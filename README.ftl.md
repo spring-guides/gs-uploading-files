@@ -25,9 +25,7 @@ Set up the project
 
 <@create_directory_structure_hello/>
 
-### Create a Gradle build file
-
-    <@snippet path="build.gradle" prefix="initial"/>
+<@create_both_builds/>
 
 <@bootstrap_starter_pom_disclaimer/>
 
@@ -79,35 +77,10 @@ The `@ComponentScan` annotation tells Spring to search recursively through the `
 
 The [`@EnableAutoConfiguration`][] annotation switches on reasonable default behaviors based on the content of your classpath. For example, because the application depends on the embeddable version of Tomcat (tomcat-embed-core.jar), a Tomcat server is set up and configured with reasonable defaults on your behalf. And because the application also depends on Spring MVC (spring-webmvc.jar), a Spring MVC [`DispatcherServlet`][] is configured and registered for you — no `web.xml` necessary! Because there is a `MultipartConfigElement`, it configured the `DispatcherServlet` with multipart file upload functionality. Auto-configuration is a powerful, flexible mechanism. See the [API documentation][`@EnableAutoConfiguration`] for further details.
 
-### Build an executable JAR
+<@build_an_executable_jar_subhead/>
+<@build_an_executable_jar_with_both/>
 
-Now that your `Application` class is ready, you simply instruct the build system to create a single, executable jar containing everything. This makes it easy to ship, version, and deploy the service as an application throughout the development lifecycle, across different environments, and so forth.
-
-Add the following configuration to your existing Gradle build file:
-
-`build.gradle`
-```groovy
-buildscript {
-    …
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.BUILD-SNAPSHOT")
-    }
-}
-
-apply plugin: 'spring-boot'
-```
-
-The [Spring Boot gradle plugin][spring-boot-gradle-plugin] collects all the jars on the classpath and builds a single "über-jar", which makes it more convenient to execute and transport your service. It also searches for the `public static void main()` method to flag as a runnable class.
-
-Now run the following command to produce a single executable JAR file containing all necessary dependency classes and resources:
-
-```sh
-$ ./gradlew build
-```
-
-[spring-boot-gradle-plugin]: https://github.com/SpringSource/spring-boot/tree/master/spring-boot-tools/spring-boot-gradle-plugin
-
-<@run_the_application module="service"/>
+<@run_the_application_with_both module="service"/>
 
 That runs the server-side piece that receives file uploads. Logging output is displayed. The service should be up and running within a few seconds.
 
@@ -133,11 +106,15 @@ run {
 }
 ```
 
+> **Note:** If you clicked on the link up above to view the final `build.gradle` file, you will have already seen this. There is similar material added to the `pom.xml` file.
+
 With the server running in one window, you need to open another window to run the client.
 
 ```sh
 $ ./gradlew run
 ```
+
+> **Note:** If you are using Maven, you can run the client by typing `mvn package exec:java`.
 
 It should produce some output like this in the client window:
 
