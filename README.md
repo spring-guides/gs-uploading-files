@@ -128,9 +128,9 @@ public class Application {
 
 This class is used to configure the server application that will receive file uploads, thanks to the `@Configuration` annotation.
 
-You will soon add a Spring MVC controller, which is why you need `@EnableWebMvc` `@ComponentScan`. It activates many key features, including the ability to find the controller class.
+You will soon add a Spring MVC controller, which is why you need both `@EnableAutoConfiguration` and `@ComponentScan`. Normally, you would use `@EnableWebMvc` for a Spring MVC application, but Spring Boot automatically adds this annotation when it detects **spring-webmvc** on your classpath. `@ComponentScan` makes it possible to automatically find `@Controller`-marked classes.
 
-Using `@EnableAutoConfiguration`, the application will detect the `MultipartConfigElement` bean and make itself ready for file uploads.
+Using `@EnableAutoConfiguration`, the application will also detect the `MultipartConfigElement` bean and make itself ready for file uploads.
 
 > **Note:** [MultipartConfigElement](http://tomcat.apache.org/tomcat-7.0-doc/servletapi/javax/servlet/MultipartConfigElement.html) is a Servlet 3.0 standard element that defines the limits on uploading files. This component is supported by all compliant containers like Tomcat and Jetty. Here it's configured to upload to the folder the application runs in with no limits, but you can override these settings if you wish.
 
