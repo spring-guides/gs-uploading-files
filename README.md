@@ -62,7 +62,7 @@ Below is the [initial Gradle build file](https://github.com/spring-guides/gs-upl
 ```gradle
 buildscript {
     repositories {
-        maven { url "http://repo.springsource.org/libs-snapshot" }
+        maven { url "http://repo.spring.io/libs-snapshot" }
         mavenLocal()
     }
 }
@@ -78,7 +78,7 @@ jar {
 
 repositories {
     mavenCentral()
-    maven { url "http://repo.springsource.org/libs-snapshot" }
+    maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
 dependencies {
