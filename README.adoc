@@ -1,3 +1,7 @@
+---
+tags: []
+projects: [spring-framework]
+---
 :spring_version: 4.0.0.RC1
 :spring_boot_version: 0.5.0.M6
 :Component: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Component.html
