@@ -20,8 +20,8 @@ repositories {
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:1.0.0.RC1")
-    testCompile("junit:junit:4.11")
+    compile("org.springframework.boot:spring-boot-starter-web:1.0.0.RC2")
+    testCompile("junit:junit")
 }
 
 task wrapper(type: Wrapper) {
