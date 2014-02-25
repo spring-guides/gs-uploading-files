@@ -65,7 +65,7 @@ You will soon add a Spring MVC controller, which is why you need both `@EnableAu
 
 Using `@EnableAutoConfiguration`, the application will also detect the `MultipartConfigElement` bean and make itself ready for file uploads.
 
-NOTE: http://tomcat.apache.org/tomcat-7.0-doc/servletapi/javax/servlet/MultipartConfigElement.html[MultipartConfigElement] is a Servlet 3.0 standard element that defines the limits on uploading files. This component is supported by all compliant containers like Tomcat and Jetty. Here it's configured to upload to the folder the application runs in with no limits, but you can override these settings if you wish.
+NOTE: http://tomcat.apache.org/tomcat-7.0-doc/servletapi/javax/servlet/MultipartConfigElement.html[MultipartConfigElement] is a Servlet 3.0 standard element that defines the limits on uploading files. This component is supported by all compliant containers like Tomcat and Jetty. Here it's configured, using Spring Boot's convenient http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/context/embedded/MultiPartConfigFactory.html[MultipartConfigFactory] to limit uploads to 256KB. But you can adjust the settings as you see fit.
 
 
 == Create a file upload controller
