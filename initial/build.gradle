@@ -4,7 +4,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.0.RC4")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.0.RC3")
     }
 }
 
@@ -14,7 +14,6 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
 apply plugin: 'application'
-mainClassName = "hello.FileUploader"
 run {
     args 'sample.txt'
 }

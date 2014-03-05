@@ -120,25 +120,19 @@ include::https://raw.github.com/spring-guides/getting-started-macros/master/run_
 
 That runs the server-side piece that receives file uploads. Logging output is displayed. The service should be up and running within a few seconds.
 
-With the server running, you need to open a browser to see the upload form. Pick a (small) file and press "Upload" and you should see the success page from the controller. Choose a file that is too large and you will get an ugly error page.
+With the server running, you need to open a browser and visit http://localhost:8080 to see the upload form. Pick a (small) file and press "Upload" and you should see the success page from the controller. Choose a file that is too large and you will get an ugly error page.
 
-----
-./gradlew run
-----
-
-NOTE: If you are using Maven, you can run the client by typing `mvn package exec:java`.
-
-It should produce some output like this in the client window:
+You should then see something like this in your browser window:
 
 ....
-You successfully uploaded sample.txt into sample.txt-uploaded !
+You successfully uploaded <name of your file> into <name you types>-uploaded !
 ....
 
-The controller itself doesn't print anything out, but instead returns the message posted to the client.
+The controller itself doesn't print anything out, but instead returns the message posted to the browser.
 
 
 == Summary
 
-Congratulations! You have just written a client and server that use Spring to handle file uploads.
+Congratulations! You have just written a web application that uses Spring to handle file uploads.
 
 
