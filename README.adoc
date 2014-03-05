@@ -85,6 +85,15 @@ The `handleFileUpload` method is geared to handle a two-part message: `name` and
 
 NOTE: In a production scenario, you more likely would store the files in a temporary location, a database, or perhaps a NoSQL store like http://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]. You also need controls in place to avoid filling up the filesystem while also protecting yourself from vulnerabilities such as uploading executables and overwriting existing files.
 
+== Create an HTML form to upload a file
+
+Create an "index.html" file in `src/main/resources/static` (so it ends up in the classpath under `/static`):
+
+`src/main/resources/static/index.html`
+[source,html]
+----
+include::complete/src/main/resources/static/index.html[]
+----
 
 == Make the application executable
 
@@ -111,35 +120,7 @@ include::https://raw.github.com/spring-guides/getting-started-macros/master/run_
 
 That runs the server-side piece that receives file uploads. Logging output is displayed. The service should be up and running within a few seconds.
 
-
-== Create a client and upload a file
-
-So far, you have built a server application capable of receiving file uploads. It would not be of much use unless you also build a client application to upload a file. The easiest way to do that is by using Spring MVC's `RestTemplate`.
-
-`src/main/java/hello/FileUploader.java`
-[source,java]
-----
-include::complete/src/main/java/hello/FileUploader.java[]
-----
-
-This client application creates a `RestTemplate` and then loads up a `MultiValueMap` with the name and the file. This leverages Spring's `FileSystemResource` class to properly load the bytes for the file. Then the template uses its `postForObject` method to `POST` the file to the server. Because the server was coded to write a textual message straight into the HTTP response, the client application prints that message out to the console.
-
-NOTE: In more sophisticated applications, you probably want to use real HTML and some type of file chooser component to pick the file for upload.
-
-You just coded some client code to upload a sample file. To run the code, add this to your Gradle build file:
-
-[source,groovy]
-----
-apply plugin: 'application'
-mainClassName = "hello.FileUploader"
-run {
-    args 'sample.txt'
-}
-----
-
-NOTE: If you clicked on the link up above to view the final `build.gradle` file, you will have already seen this. There is similar material added to the `pom.xml` file.
-
-With the server running in one window, you need to open another window to run the client.
+With the server running, you need to open a browser to see the upload form. Pick a (small) file and press "Upload" and you should see the success page from the controller. Choose a file that is too large and you will get an ugly error page.
 
 ----
 ./gradlew run

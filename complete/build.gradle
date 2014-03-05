@@ -14,7 +14,6 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
 apply plugin: 'application'
-mainClassName = "hello.FileUploader"
 run {
     args 'sample.txt'
 }
