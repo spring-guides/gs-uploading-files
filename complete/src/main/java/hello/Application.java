@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 public class Application {
 
     @Bean
-    MultipartConfigElement multipartConfigElement() {
+    public MultipartConfigElement multipartConfigElement() {
         MultiPartConfigFactory factory = new MultiPartConfigFactory();
         factory.setMaxFileSize("128KB");
         factory.setMaxRequestSize("128KB");
