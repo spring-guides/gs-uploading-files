@@ -45,6 +45,8 @@ include::https://raw.github.com/spring-guides/getting-started-macros/master/crea
 include::initial/build.gradle[]
 ----
 
+NOTE: Spring Boot 1.0.0.RC4 has issues with upload support which is why this guide is held back to RC3. 
+
 include::https://raw.github.com/spring-guides/getting-started-macros/master/spring-boot-gradle-plugin.adoc[]
 
 
