@@ -3,7 +3,7 @@ tags: []
 projects: [spring-framework]
 ---
 :spring_version: current
-:spring_boot_version: 1.0.0.RC4
+:spring_boot_version: 1.0.0.RC5
 :Component: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Component.html
 :Controller: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Controller.html
 :DispatcherServlet: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
@@ -44,8 +44,6 @@ include::https://raw.github.com/spring-guides/getting-started-macros/master/crea
 ----
 include::initial/build.gradle[]
 ----
-
-NOTE: Spring Boot 1.0.0.RC4 has issues with upload support which is why this guide is held back to RC3. 
 
 include::https://raw.github.com/spring-guides/getting-started-macros/master/spring-boot-gradle-plugin.adoc[]
 
