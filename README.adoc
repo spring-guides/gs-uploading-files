@@ -104,8 +104,6 @@ The {EnableAutoConfiguration}[`@EnableAutoConfiguration`] annotation switches on
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_subhead.adoc[]
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_with_both.adoc[]
 
-:module: service
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/run_the_application_with_both.adoc[]
 
 That runs the server-side piece that receives file uploads. Logging output is displayed. The service should be up and running within a few seconds.
 
