@@ -54,11 +54,11 @@ You will soon add a Spring MVC controller, which is why you need both `@EnableAu
 
 Using `@EnableAutoConfiguration`, the application will also detect the `MultipartConfigElement` bean and make itself ready for file uploads.
 
-NOTE: http://tomcat.apache.org/tomcat-7.0-doc/servletapi/javax/servlet/MultipartConfigElement.html[MultipartConfigElement] is a Servlet 3.0 standard element that defines the limits on uploading files. This component is supported by all compliant containers like Tomcat and Jetty. Here it's configured, using Spring Boot's convenient http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/context/embedded/MultiPartConfigFactory.html[MultipartConfigFactory] to limit uploads to 256KB. But you can adjust the settings as you see fit.
+NOTE: http://tomcat.apache.org/tomcat-7.0-doc/servletapi/javax/servlet/MultipartConfigElement.html[MultipartConfigElement] is a Servlet 3.0 standard element that defines the limits on uploading files. This component is supported by all compliant containers like Tomcat and Jetty. Here it's configured, using Spring Boot's convenient http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/context/embedded/MultiPartConfigFactory.html[MultipartConfigFactory] to limit uploads to 128KB. But you can adjust the settings as you see fit.
 
 
 == Create a file upload controller
-In Spring, REST endpoints are just Spring MVC controllers. The following code provides the web app with the ability to upload files.
+In Spring MVC, a controller is used to handle file upload requests. The following code provides the web app with the ability to upload files.
 
 `src/main/java/hello/FileUploadController.java`
 [source,java]
@@ -68,9 +68,9 @@ include::complete/src/main/java/hello/FileUploadController.java[]
 
 The entire class is marked up with `@Controller` so Spring MVC can pick it up and look for routes.
 
-Each method is tagged with `@RequestMapping` to flag the path and the REST action. In this case, `GET` returns a very simple message indicating the `POST` operation is available.
+Each method is tagged with `@RequestMapping` to flag the path and the HTTP action. In this case, `GET` returns a very simple message indicating the `POST` operation is available.
 
-The `handleFileUpload` method is geared to handle a two-part message: `name` and `file`. It checks to make sure the file is not empty, and if it is empty, the method grabs the bytes. Next, it writes them out through a `BufferedOutputStream`. Finally, it appends **-uploaded** to the target filename to clearly show when a file has been uploaded.
+The `handleFileUpload` method is geared to handle a two-part message: `name` and `file`. It checks to make sure the file is not empty, and if it is empty, the method grabs the bytes. Next, it writes them out through a `BufferedOutputStream`.
 
 NOTE: In a production scenario, you more likely would store the files in a temporary location, a database, or perhaps a NoSQL store like http://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]. You also need controls in place to avoid filling up the filesystem while also protecting yourself from vulnerabilities such as uploading executables and overwriting existing files.
 
@@ -112,7 +112,7 @@ With the server running, you need to open a browser and visit http://localhost:8
 You should then see something like this in your browser window:
 
 ....
-You successfully uploaded <name of your file> into <name you types>-uploaded !
+You successfully uploaded <name of your file>!
 ....
 
 The controller itself doesn't print anything out, but instead returns the message posted to the browser.

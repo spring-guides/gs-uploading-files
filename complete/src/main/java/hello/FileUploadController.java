@@ -26,10 +26,10 @@ public class FileUploadController {
             try {
                 byte[] bytes = file.getBytes();
                 BufferedOutputStream stream = 
-                        new BufferedOutputStream(new FileOutputStream(new File(name + "-uploaded")));
+                        new BufferedOutputStream(new FileOutputStream(new File(name)));
                 stream.write(bytes);
                 stream.close();
-                return "You successfully uploaded " + name + " into " + name + "-uploaded !";
+                return "You successfully uploaded " + name + "!";
             } catch (Exception e) {
                 return "You failed to upload " + name + " => " + e.getMessage();
             }
@@ -37,5 +37,5 @@ public class FileUploadController {
             return "You failed to upload " + name + " because the file was empty.";
         }
     }
-    
+
 }
