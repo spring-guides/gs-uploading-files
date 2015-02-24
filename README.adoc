@@ -9,7 +9,7 @@ projects: [spring-framework]
 :DispatcherServlet: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
 :SpringApplication: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/SpringApplication.html
 :ResponseBody: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html
-:EnableAutoConfiguration: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html
+:SpringBootApplication: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/autoconfigure/SpringBootApplication.html
 :toc:
 :icons: font
 :source-highlighter: prettify
@@ -50,7 +50,7 @@ include::initial/src/main/java/hello/Application.java[]
 
 This class is used to configure the server application that will receive file uploads, thanks to the `@Configuration` annotation.
 
-You will soon add a Spring MVC controller, which is why you need both `@EnableAutoConfiguration` and `@ComponentScan`. Normally, you would use `@EnableWebMvc` for a Spring MVC application, but Spring Boot automatically adds this annotation when it detects **spring-webmvc** on your classpath. `@ComponentScan` makes it possible to automatically find `@Controller`-marked classes.
+You will soon add a Spring MVC controller, which is why you need `@SpringBootApplication` and `@ComponentScan`. Normally, you would use `@EnableWebMvc` for a Spring MVC application, but Spring Boot automatically adds this annotation when it detects **spring-webmvc** on your classpath. `@ComponentScan` makes it possible to automatically find `@Controller`-marked classes.
 
 As part of auto-configuring Spring MVC, Spring Boot will create a `MultipartConfigElement` bean and make itself ready for file uploads.
 
@@ -114,9 +114,7 @@ include::complete/src/main/java/hello/Application.java[]
 
 The `main()` method defers to the {SpringApplication}[`SpringApplication`] helper class, providing `Application.class` as an argument to its `run()` method. This tells Spring to read the annotation metadata from `Application` and to manage it as a component in the _link:/understanding/application-context[Spring application context]_.
 
-The `@ComponentScan` annotation tells Spring to search recursively through the `hello` package and its children for classes marked directly or indirectly with Spring's {Component}[`@Component`] annotation. This directive ensures that Spring finds and registers the `FileUploadController`, because it is marked with `@Controller`, which in turn is a kind of `@Component` annotation.
-
-The {EnableAutoConfiguration}[`@EnableAutoConfiguration`] annotation switches on reasonable default behaviors based on the content of your classpath. For example, because the application depends on the embeddable version of Tomcat (tomcat-embed-core.jar), a Tomcat server is set up and configured with reasonable defaults on your behalf. And because the application also depends on Spring MVC (spring-webmvc.jar), a Spring MVC {DispatcherServlet}[`DispatcherServlet`] is configured and registered for you — no `web.xml` necessary! Spring Boot configures Spring's battle tested `DispatcherServlet` with multipart file upload support out of the box. Auto-configuration is a powerful, flexible mechanism. See the {EnableAutoConfiguration}[API documentation] for further details.
+The {SpringBootApplication}[`@SpringBootApplication`] annotation combines `@Configuration`, `@ComponentScan`, and `@EnableAutoConfiguration`. This causes Spring Boot to automatically scan for Spring {Component}[`@Component`]'s and switches on reasonable default behaviors based on the content of your classpath. For example, because the application depends on the embeddable version of Tomcat (tomcat-embed-core.jar), a Tomcat server is set up and configured with reasonable defaults on your behalf. And because the application also depends on Spring MVC (spring-webmvc.jar), a Spring MVC {DispatcherServlet}[`DispatcherServlet`] is configured and registered for you — no `web.xml` necessary! Spring Boot configures Spring's battle tested `DispatcherServlet` with multipart file upload support out of the box. Auto-configuration is a powerful, flexible mechanism. See the {SpringBootApplication}[API documentation] for further details.
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_subhead.adoc[]
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_with_both.adoc[]
