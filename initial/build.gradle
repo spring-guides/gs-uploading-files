@@ -1,8 +1,6 @@
 buildscript {
     repositories {
-        maven { url "https://repo.spring.io/libs-release" }
-        mavenLocal()
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.1.RELEASE")
@@ -21,20 +19,14 @@ run {
 
 jar {
     baseName = 'gs-uploading-files'
-    version =  '0.1.0'
+    version =  '0.1.1'
 }
 
 repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url "https://repo.spring.io/libs-release" }
+    jcenter()
 }
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     testCompile("junit:junit")
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.11'
 }
