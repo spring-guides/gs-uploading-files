@@ -84,7 +84,7 @@ Create `src/main/resources/application.properties` and make it look like this:
 `src/main/resources/application.properties`
 [source,java]
 ----
-include::complete/src/main/resources/application.properties
+include::complete/src/main/resources/application.properties[]
 ----
 
 The multipart settings are constrained as follows:
