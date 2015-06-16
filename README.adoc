@@ -77,7 +77,7 @@ NOTE: In a production scenario, you more likely would store the files in a tempo
 
 == Tuning file upload limits
 
-When configuring file uploads, its often useful to set limits on the size of files. Imagine trying to handle a 5GB file upload! We Spring Boot, we can configure it's auto-configured `MultipartConfigElement` with some property settings.
+When configuring file uploads, its often useful to set limits on the size of files. Imagine trying to handle a 5GB file upload! With Spring Boot, we can configure its auto-configured `MultipartConfigElement` with some property settings.
 
 Create `src/main/resources/application.properties` and make it look like this:
 
