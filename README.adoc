@@ -145,3 +145,6 @@ The controller itself doesn't print anything out, but instead returns the messag
 Congratulations! You have just written a web application that uses Spring to handle file uploads.
 
 
+
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/footer.adoc[]
+
