@@ -71,13 +71,13 @@ The entire class is marked up with `@Controller` so Spring MVC can pick it up an
 
 Each method is tagged with `@RequestMapping` to flag the path and the HTTP action. In this case, `GET` returns a very simple message indicating the `POST` operation is available.
 
-The `handleFileUpload` method is geared to handle a two-part message: `name` and `file`. It checks to make sure the file is not empty, and if it is empty, the method grabs the bytes. Next, it writes them out through a `BufferedOutputStream`.
+The `handleFileUpload` method is geared to handle a two-part message: `name` and `file`. It checks to make sure the file is not empty, and then the method grabs the bytes. Next, it writes them out through a `BufferedOutputStream`.
 
 NOTE: In a production scenario, you more likely would store the files in a temporary location, a database, or perhaps a NoSQL store like http://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]. You also need controls in place to avoid filling up the filesystem while also protecting yourself from vulnerabilities such as uploading executables and overwriting existing files.
 
 == Tuning file upload limits
 
-When configuring file uploads, its often useful to set limits on the size of files. Imagine trying to handle a 5GB file upload! With Spring Boot, we can configure its auto-configured `MultipartConfigElement` with some property settings.
+When configuring file uploads, it is often useful to set limits on the size of files. Imagine trying to handle a 5GB file upload! With Spring Boot, we can configure its auto-configured `MultipartConfigElement` with some property settings.
 
 Create `src/main/resources/application.properties` and make it look like this:
 
@@ -118,7 +118,7 @@ include::complete/src/main/java/hello/Application.java[]
 - `@Configuration` tags the class as a source of bean definitions for the application context.
 - `@EnableAutoConfiguration` tells Spring Boot to start adding beans based on classpath settings, other beans, and various property settings.
 - Normally you would add `@EnableWebMvc` for a Spring MVC app, but Spring Boot adds it automatically when it sees **spring-webmvc** on the classpath. This flags the application as a web application and activates key behaviors such as setting up a `DispatcherServlet`.
-- `@ComponentScan` tells Spring to look for other components, configurations, and services in the the `hello` package, allowing it to find the `HelloController`.
+- `@ComponentScan` tells Spring to look for other components, configurations, and services in the the `hello` package, allowing it to find the `FileUploadController`.
 
 The `main()` method uses Spring Boot's `SpringApplication.run()` method to launch an application. Did you notice that there wasn't a single line of XML? No **web.xml** file either. This web application is 100% pure Java and you didn't have to deal with configuring any plumbing or infrastructure.
 
