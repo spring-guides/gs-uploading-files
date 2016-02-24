@@ -46,8 +46,10 @@ To upload files with Servlet 3.0 containers, you need to register a `MultipartCo
 `src/main/java/hello/Application.java`
 [source,java]
 ----
-include::initial/src/main/java/hello/Application.java[]
+include::complete/src/main/java/hello/Application.java[]
 ----
+
+You also want a target folder to upload files to, so there is a Java 8 lambda used to create a Boot `CommandLineRunner` at startup which creates that folder.
 
 You will soon add a Spring MVC controller, which is why you need `@SpringBootApplication`. Spring Boot automatically finds `@Controller`-marked classes and registers them with the application context.
 
