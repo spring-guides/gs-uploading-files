@@ -46,10 +46,8 @@ To upload files with Servlet 3.0 containers, you need to register a `MultipartCo
 `src/main/java/hello/Application.java`
 [source,java]
 ----
-include::complete/src/main/java/hello/Application.java[]
+include::initial/src/main/java/hello/Application.java[]
 ----
-
-You also want a target folder to upload files to, so there is a Java 8 lambda used to create a Boot `CommandLineRunner` at startup which creates that folder.
 
 You will soon add a Spring MVC controller, which is why you need `@SpringBootApplication`. Spring Boot automatically finds `@Controller`-marked classes and registers them with the application context.
 
@@ -134,6 +132,8 @@ include::complete/src/main/java/hello/Application.java[]
 - `@ComponentScan` tells Spring to look for other components, configurations, and services in the the `hello` package, allowing it to find the `FileUploadController`.
 
 The `main()` method uses Spring Boot's `SpringApplication.run()` method to launch an application. Did you notice that there wasn't a single line of XML? No **web.xml** file either. This web application is 100% pure Java and you didn't have to deal with configuring any plumbing or infrastructure.
+
+You also want a target folder to upload files to, so there is a Java 8 lambda used to create a Boot `CommandLineRunner` at startup which creates that folder.
 
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_subhead.adoc[]
