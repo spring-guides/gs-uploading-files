@@ -20,7 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class FileUploadController {
 
-	@RequestMapping(method = RequestMethod.GET, value = "/upload")
+	@RequestMapping(method = RequestMethod.GET, value = "/")
 	public String provideUploadInfo(Model model) {
 		File rootFolder = new File(Application.ROOT);
 		List<String> fileNames = Arrays.stream(rootFolder.listFiles())
@@ -37,17 +37,17 @@ public class FileUploadController {
 		return "uploadForm";
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/upload")
+	@RequestMapping(method = RequestMethod.POST, value = "/")
 	public String handleFileUpload(@RequestParam("name") String name,
 								   @RequestParam("file") MultipartFile file,
 								   RedirectAttributes redirectAttributes) {
 		if (name.contains("/")) {
 			redirectAttributes.addFlashAttribute("message", "Folder separators not allowed");
-			return "redirect:upload";
+			return "redirect:/";
 		}
 		if (name.contains("/")) {
 			redirectAttributes.addFlashAttribute("message", "Relative pathnames not allowed");
-			return "redirect:upload";
+			return "redirect:/";
 		}
 
 		if (!file.isEmpty()) {
@@ -69,7 +69,7 @@ public class FileUploadController {
 					"You failed to upload " + name + " because the file was empty");
 		}
 
-		return "redirect:upload";
+		return "redirect:/";
 	}
 
 }
