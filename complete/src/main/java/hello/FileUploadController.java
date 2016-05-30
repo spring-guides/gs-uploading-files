@@ -45,7 +45,7 @@ public class FileUploadController {
 			redirectAttributes.addFlashAttribute("message", "Folder separators not allowed");
 			return "redirect:/";
 		}
-		if (name.contains("/")) {
+		if (name.contains("\\")) {
 			redirectAttributes.addFlashAttribute("message", "Relative pathnames not allowed");
 			return "redirect:/";
 		}
@@ -53,7 +53,7 @@ public class FileUploadController {
 		if (!file.isEmpty()) {
 			try {
 				BufferedOutputStream stream = new BufferedOutputStream(
-						new FileOutputStream(new File(Application.ROOT + "/" + name)));
+						new FileOutputStream(new File(Application.ROOT + File.separator + name)));
                 FileCopyUtils.copy(file.getInputStream(), stream);
 				stream.close();
 				redirectAttributes.addFlashAttribute("message",
