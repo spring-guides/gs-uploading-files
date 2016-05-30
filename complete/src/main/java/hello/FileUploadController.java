@@ -55,7 +55,6 @@ public class FileUploadController {
 				BufferedOutputStream stream = new BufferedOutputStream(
 						new FileOutputStream(new File(Application.ROOT + "/" + name)));
                 FileCopyUtils.copy(file.getInputStream(), stream);
-				stream.close();
 				redirectAttributes.addFlashAttribute("message",
 						"You successfully uploaded " + name + "!");
 			}
