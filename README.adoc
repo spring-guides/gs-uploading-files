@@ -1,6 +1,6 @@
 ---
-tags: []
-projects: [spring-framework]
+tags: [files, upload, hateoas, mvc]
+projects: [spring-framework, spring-hateoas]
 ---
 :spring_version: current
 :spring_boot_version: 1.3.5.RELEASE
@@ -14,6 +14,7 @@ projects: [spring-framework]
 :icons: font
 :source-highlighter: prettify
 :project_id: gs-uploading-files
+
 This guide walks you through the process of creating a server application that can receive multi-part file uploads.
 
 == What you'll build
@@ -68,16 +69,13 @@ include::complete/src/main/java/hello/FileUploadController.java[]
 
 The entire class is marked up with `@Controller` so Spring MVC can pick it up and look for routes.
 
-Each method is tagged with `@RequestMapping` to flag the path and the HTTP action. In this case, `GET` looks up the current list of uploaded files (stored in `Application.ROOT` folder) and load it into a Thymeleaf template.
+Each method is tagged with `@RequestMapping` to flag the path and the HTTP action. In this case, `GET` looks up the current list of uploaded files (stored in `Application.ROOT` folder) and loads it into a Thymeleaf template. It provides a link to not only see, but "surf" to the file (letting the browser decide how to render).
 
-NOTE: This example uses Java 8's streams support to transform an array of `java.io.File` objects into a sorted list of filenames (latest to earliest modified timestamp).
+NOTE: This example uses Java 8's stream support combined with Java NIO operations to build paths, walk the directory of files, and generate Spring HATEOAS links.
 
-
-The `handleFileUpload` method is geared to handle a two-part message: `name` and `file`. It checks to make sure the file name contains no illegal characers, and then copies the bytes into a target file through a `BufferedOutputStream`.
+The `handleFileUpload` method is geared to handle a multi-part message: `file`. After verifying the file isn't empty, it uses Java NIO to copy the input stream to a local file.
 
 NOTE: In a production scenario, you more likely would store the files in a temporary location, a database, or perhaps a NoSQL store like http://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]. It's is best to NOT load up the file system of your application with content.
-
-WARNING: This code has some rudimentary checks to avoid files escaping the file system, but doesnt' protect against people uploading executables, etc. which could be used to launch attacks.
 
 == Creating a barebones template
 
