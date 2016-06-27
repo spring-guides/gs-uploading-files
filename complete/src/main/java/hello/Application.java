@@ -13,8 +13,6 @@ import org.springframework.util.FileSystemUtils;
 @SpringBootApplication
 public class Application {
 
-	public static String ROOT = "upload-dir";
-
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
@@ -22,9 +20,9 @@ public class Application {
 	@Bean
 	CommandLineRunner init() {
 		return (args) -> {
-            FileSystemUtils.deleteRecursively(new File(ROOT));
+            FileSystemUtils.deleteRecursively(new File(FileUploadController.ROOT));
 
-            Files.createDirectory(Paths.get(ROOT));
+            Files.createDirectory(Paths.get(FileUploadController.ROOT));
 		};
 	}
 }

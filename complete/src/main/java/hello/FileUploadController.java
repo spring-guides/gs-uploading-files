@@ -29,6 +29,8 @@ public class FileUploadController {
 
 	private static final Logger log = LoggerFactory.getLogger(FileUploadController.class);
 
+	public static String ROOT = "upload-dir";
+
 	private final ResourceLoader resourceLoader;
 
 	@Autowired
@@ -39,9 +41,9 @@ public class FileUploadController {
 	@RequestMapping(method = RequestMethod.GET, value = "/")
 	public String provideUploadInfo(Model model) throws IOException {
 
-		model.addAttribute("files", Files.walk(Paths.get(Application.ROOT))
-				.filter(path -> !path.equals(Paths.get(Application.ROOT)))
-				.map(path -> Paths.get(Application.ROOT).relativize(path))
+		model.addAttribute("files", Files.walk(Paths.get(ROOT))
+				.filter(path -> !path.equals(Paths.get(ROOT)))
+				.map(path -> Paths.get(ROOT).relativize(path))
 				.map(path -> linkTo(methodOn(FileUploadController.class).getFile(path.toString())).withRel(path.toString()))
 				.collect(Collectors.toList()));
 
@@ -53,7 +55,7 @@ public class FileUploadController {
 	public ResponseEntity<?> getFile(@PathVariable String filename) {
 
 		try {
-			return ResponseEntity.ok(resourceLoader.getResource("file:" + Paths.get(Application.ROOT, filename).toString()));
+			return ResponseEntity.ok(resourceLoader.getResource("file:" + Paths.get(ROOT, filename).toString()));
 		} catch (Exception e) {
 			return ResponseEntity.notFound().build();
 		}
@@ -65,7 +67,7 @@ public class FileUploadController {
 
 		if (!file.isEmpty()) {
 			try {
-				Files.copy(file.getInputStream(), Paths.get(Application.ROOT, file.getOriginalFilename()));
+				Files.copy(file.getInputStream(), Paths.get(ROOT, file.getOriginalFilename()));
 				redirectAttributes.addFlashAttribute("message",
 						"You successfully uploaded " + file.getOriginalFilename() + "!");
 			} catch (IOException|RuntimeException e) {
