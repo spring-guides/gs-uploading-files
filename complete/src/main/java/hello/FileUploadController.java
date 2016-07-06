@@ -29,7 +29,7 @@ public class FileUploadController {
 
 	private static final Logger log = LoggerFactory.getLogger(FileUploadController.class);
 
-	public static String ROOT = "upload-dir";
+	public static final String ROOT = "upload-dir";
 
 	private final ResourceLoader resourceLoader;
 
