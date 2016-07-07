@@ -55,7 +55,7 @@ public class FileUploadController {
 	public ResponseEntity<?> getFile(@PathVariable String filename) {
 
 		try {
-			return ResponseEntity.ok(resourceLoader.getResource("file:" + Paths.get(ROOT, filename).toString()));
+			return ResponseEntity.ok(resourceLoader.getResource(Paths.get(ROOT, filename).toUri().toString()));
 		} catch (Exception e) {
 			return ResponseEntity.notFound().build();
 		}
