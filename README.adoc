@@ -96,7 +96,7 @@ This template has three parts:
 
 == Tuning file upload limits
 
-When configuring file uploads, it is often useful to set limits on the size of files. Imagine trying to handle a 5GB file upload! With Spring Boot, we can configure its auto-configured `MultipartConfigElement` with some property settings.
+When configuring file uploads, it is often useful to set limits on the size of files. Imagine trying to handle a 5GB file upload! With Spring Boot, we can tune its auto-configured `MultipartConfigElement` with some property settings.
 
 Create `src/main/resources/application.properties` and make it look like this:
 
@@ -108,8 +108,8 @@ include::complete/src/main/resources/application.properties[]
 
 The multipart settings are constrained as follows:
 
-* `multipart.maxFileSize` is set to 128KB, meaning total file size cannot exceed 128KB.
-* `multipart.maxRequestSize` is set to 128KB, meaning total request size for a `multipart/form-data` cannot exceed 128KB.
+* `spring.http.multipart.max-file-size` is set to 128KB, meaning total file size cannot exceed 128KB.
+* `spring.http.multipart.max-request-size` is set to 128KB, meaning total request size for a `multipart/form-data` cannot exceed 128KB.
 
 == Make the application executable
 
