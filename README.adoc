@@ -1,12 +1,6 @@
----
-tags: [files, upload, hateoas, mvc]
-projects: [spring-framework, spring-hateoas]
----
 :spring_version: current
 :spring_boot_version: 1.4.0.RELEASE
-:Component: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Component.html
 :Controller: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Controller.html
-:DispatcherServlet: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
 :SpringApplication: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/SpringApplication.html
 :ResponseBody: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html
 :SpringBootApplication: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/autoconfigure/SpringBootApplication.html
@@ -15,11 +9,11 @@ projects: [spring-framework, spring-hateoas]
 :source-highlighter: prettify
 :project_id: gs-uploading-files
 
-This guide walks you through the process of creating a server application that can receive multi-part file uploads.
+This guide walks you through the process of creating a server application that can receive HTTP multi-part file uploads.
 
 == What you'll build
 
-You will create a Spring MVC application that accepts file uploads. You will also build a simple client to upload a test file.
+You will create a Spring Boot web application that accepts file uploads. You will also build a simple HTML interface to upload a test file.
 
 
 == What you'll need
@@ -40,9 +34,11 @@ include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/
 
 
 [[initial]]
-== Create a configuration class
+== Create an Application class
 
-To upload files with Servlet 3.0 containers, you need to register a `MultipartConfigElement` class (which would be `<multipart-config>` in web.xml). Thanks to Spring Boot, that bean is already registered and available! All you need to get started with this application is the following, empty configuration setup.
+To start a Spring Boot MVC application, we first need a starter; here, `spring-boot-starter-thymeleaf` and `spring-boot-starter-web` are already added as dependencies. To upload files with Servlet containers, you need to register a `MultipartConfigElement` class (which would be `<multipart-config>` in web.xml). Thanks to Spring Boot, everything is auto-configured for you!
+
+All you need to get started with this application is the following `Application` class.
 
 `src/main/java/hello/Application.java`
 [source,java]
@@ -50,16 +46,12 @@ To upload files with Servlet 3.0 containers, you need to register a `MultipartCo
 include::initial/src/main/java/hello/Application.java[]
 ----
 
-You will soon add a Spring MVC controller, which is why you need `@SpringBootApplication`. Spring Boot automatically finds `@Controller`-marked classes and registers them with the application context.
-
 As part of auto-configuring Spring MVC, Spring Boot will create a `MultipartConfigElement` bean and make itself ready for file uploads.
-
-NOTE: http://tomcat.apache.org/tomcat-7.0-doc/servletapi/javax/servlet/MultipartConfigElement.html[MultipartConfigElement] is a Servlet 3.0 standard element that defines the limits on uploading files. This component is supported by all compliant containers like Tomcat and Jetty. Later on in this guide, we'll see how to configure its limits.
 
 
 == Create a file upload controller
 
-In Spring MVC, a controller is used to handle file upload requests. The following code provides the web app with the ability to upload files.
+The initial application already contains a few classes to deal with storing and loading the uploaded files on disk; they're all located in the `hello.storage` package. We'll use those in our new `FileUploadController`.
 
 `src/main/java/hello/FileUploadController.java`
 [source,java]
@@ -67,17 +59,17 @@ In Spring MVC, a controller is used to handle file upload requests. The followin
 include::complete/src/main/java/hello/FileUploadController.java[]
 ----
 
-The entire class is marked up with `@Controller` so Spring MVC can pick it up and look for routes.
+This class is annotated with `@Controller` so Spring MVC can pick it up and look for routes. Each method is tagged with `@GetMapping` or `@PostMapping` to tie the path and the HTTP action to a particular Controller action.
 
-Each method is tagged with `@RequestMapping` to flag the path and the HTTP action. In this case, `GET` looks up the current list of uploaded files (stored in `Application.ROOT` folder) and loads it into a Thymeleaf template. It provides a link to not only see, but "surf" to the file (letting the browser decide how to render).
+In this case:
 
-NOTE: This example uses Java 8's stream support combined with Java NIO operations to build paths, walk the directory of files, and generate Spring HATEOAS links.
-
-The `handleFileUpload` method is geared to handle a multi-part message: `file`. After verifying the file isn't empty, it uses Java NIO to copy the input stream to a local file.
+* `GET /` looks up the current list of uploaded files from the `StorageService` and loads it into a Thymeleaf template. It calculates a link to the actual resource using `MvcUriComponentsBuilder`
+* `GET /files/{filename}` loads the resource if it exists, and sends it to the browser to download using a `"Content-Disposition"` response header
+* `POST /` is geared to handle a multi-part message `file` and give it to the `StorageService` for saving
 
 NOTE: In a production scenario, you more likely would store the files in a temporary location, a database, or perhaps a NoSQL store like http://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]. It's is best to NOT load up the file system of your application with content.
 
-== Creating a barebones template
+== Creating a simple HTML template
 
 To build something of interest, the following Thymeleaf template is a nice example of uploading files as well as showing what's been uploaded.
 
@@ -98,7 +90,7 @@ This template has three parts:
 
 When configuring file uploads, it is often useful to set limits on the size of files. Imagine trying to handle a 5GB file upload! With Spring Boot, we can tune its auto-configured `MultipartConfigElement` with some property settings.
 
-Create `src/main/resources/application.properties` and make it look like this:
+Add the following properties to your existing `src/main/resources/application.properties`:
 
 `src/main/resources/application.properties`
 [source,java]
@@ -141,6 +133,19 @@ You should then see something like this in your browser window:
 You successfully uploaded <name of your file>!
 ....
 
+== Testing your application
+
+There are multiple ways to test this particular feature in our application. Here's one example that leverages `MockMvc`, so it does not require to start the Servlet container:
+
+`src/test/java/hello/FileUploadTests.java`
+[source,java]
+----
+include::complete/src/test/java/hello/FileUploadTests.java[]
+----
+
+In those tests, we're using various mocks to set up the interactions with our Controller and the `StorageService` but also with the Servlet container itself by using `MockMultipartFile`.
+
+For an example of an integration test, please check out the `FileUploadIntegrationTests` class.
 
 == Summary
 

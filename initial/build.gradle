@@ -9,13 +9,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: 'idea'
 apply plugin: 'spring-boot'
-
-apply plugin: 'application'
-run {
-    args 'sample.txt'
-}
 
 jar {
     baseName = 'gs-uploading-files'
@@ -31,8 +25,8 @@ targetCompatibility = 1.8
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-    compile("org.springframework.boot:spring-boot-starter-hateoas")
     compile("org.springframework.boot:spring-boot-devtools")
-    testCompile("junit:junit")
+    compile("org.springframework.boot:spring-boot-configuration-processor")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 

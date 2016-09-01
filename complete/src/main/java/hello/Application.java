@@ -1,16 +1,15 @@
 package hello;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
+import hello.storage.StorageProperties;
+import hello.storage.StorageService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.util.FileSystemUtils;
 
 @SpringBootApplication
+@EnableConfigurationProperties(StorageProperties.class)
 public class Application {
 
 	public static void main(String[] args) {
@@ -18,11 +17,10 @@ public class Application {
 	}
 
 	@Bean
-	CommandLineRunner init() {
+	CommandLineRunner init(StorageService storageService) {
 		return (args) -> {
-            FileSystemUtils.deleteRecursively(new File(FileUploadController.ROOT));
-
-            Files.createDirectory(Paths.get(FileUploadController.ROOT));
+            storageService.deleteAll();
+            storageService.init();
 		};
 	}
 }
