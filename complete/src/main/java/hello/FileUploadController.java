@@ -1,83 +1,70 @@
 package hello;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import hello.storage.StorageFileNotFoundException;
+import hello.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.IOException;
+import java.util.stream.Collectors;
 
 @Controller
 public class FileUploadController {
 
-	private static final Logger log = LoggerFactory.getLogger(FileUploadController.class);
+    private final StorageService storageService;
 
-	public static final String ROOT = "upload-dir";
+    @Autowired
+    public FileUploadController(StorageService storageService) {
+        this.storageService = storageService;
+    }
 
-	private final ResourceLoader resourceLoader;
+    @GetMapping("/")
+    public String listUploadedFiles(Model model) throws IOException {
 
-	@Autowired
-	public FileUploadController(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
-	}
+        model.addAttribute("files", storageService
+                .loadAll()
+                .map(path ->
+                        MvcUriComponentsBuilder
+                                .fromMethodName(FileUploadController.class, "serveFile", path.getFileName().toString())
+                                .build().toString())
+                .collect(Collectors.toList()));
 
-	@RequestMapping(method = RequestMethod.GET, value = "/")
-	public String provideUploadInfo(Model model) throws IOException {
+        return "uploadForm";
+    }
 
-		model.addAttribute("files", Files.walk(Paths.get(ROOT))
-				.filter(path -> !path.equals(Paths.get(ROOT)))
-				.map(path -> Paths.get(ROOT).relativize(path))
-				.map(path -> linkTo(methodOn(FileUploadController.class).getFile(path.toString())).withRel(path.toString()))
-				.collect(Collectors.toList()));
+    @GetMapping("/files/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
 
-		return "uploadForm";
-	}
+        Resource file = storageService.loadAsResource(filename);
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+file.getFilename()+"\"")
+                .body(file);
+    }
 
-	@RequestMapping(method = RequestMethod.GET, value = "/{filename:.+}")
-	@ResponseBody
-	public ResponseEntity<?> getFile(@PathVariable String filename) {
+    @PostMapping("/")
+    public String handleFileUpload(@RequestParam("file") MultipartFile file,
+                                   RedirectAttributes redirectAttributes) {
 
-		try {
-			return ResponseEntity.ok(resourceLoader.getResource("file:" + Paths.get(ROOT, filename).toString()));
-		} catch (Exception e) {
-			return ResponseEntity.notFound().build();
-		}
-	}
+        storageService.store(file);
+        redirectAttributes.addFlashAttribute("message",
+                "You successfully uploaded " + file.getOriginalFilename() + "!");
 
-	@RequestMapping(method = RequestMethod.POST, value = "/")
-	public String handleFileUpload(@RequestParam("file") MultipartFile file,
-								   RedirectAttributes redirectAttributes) {
+        return "redirect:/";
+    }
 
-		if (!file.isEmpty()) {
-			try {
-				Files.copy(file.getInputStream(), Paths.get(ROOT, file.getOriginalFilename()));
-				redirectAttributes.addFlashAttribute("message",
-						"You successfully uploaded " + file.getOriginalFilename() + "!");
-			} catch (IOException|RuntimeException e) {
-				redirectAttributes.addFlashAttribute("message", "Failued to upload " + file.getOriginalFilename() + " => " + e.getMessage());
-			}
-		} else {
-			redirectAttributes.addFlashAttribute("message", "Failed to upload " + file.getOriginalFilename() + " because it was empty");
-		}
-
-		return "redirect:/";
-	}
+    @ExceptionHandler(StorageFileNotFoundException.class)
+    public ResponseEntity handleStorageFileNotFound(StorageFileNotFoundException exc) {
+        return ResponseEntity.notFound().build();
+    }
 
 }
