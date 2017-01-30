@@ -90,7 +90,7 @@ This template has three parts:
 
 When configuring file uploads, it is often useful to set limits on the size of files. Imagine trying to handle a 5GB file upload! With Spring Boot, we can tune its auto-configured `MultipartConfigElement` with some property settings.
 
-Add the following properties to your existing `src/main/resources/application.properties`:
+Add the following properties to your existing properties settings:
 
 `src/main/resources/application.properties`
 [source,java]
