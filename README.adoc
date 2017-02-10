@@ -1,7 +1,7 @@
-----
+---
 tags: [files, upload, hateoas, mvc]
 projects: [spring-framework, spring-hateoas]
-----
+---
 :spring_version: current
 :spring_boot_version: 1.5.1.RELEASE
 :Controller: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Controller.html
