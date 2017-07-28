@@ -121,6 +121,7 @@ The multipart settings are constrained as follows:
 
 Although it is possible to package this service as a traditional link:/understanding/WAR[WAR] file for deployment to an external application server, the simpler approach demonstrated below creates a _standalone application_. You package everything in a single, executable JAR file, driven by a good old Java `main()` method. And along the way, you use Spring's support for embedding the link:/understanding/Tomcat[Tomcat] servlet container as the HTTP runtime, instead of deploying to an external instance.
 
+You also want a target folder to upload files to, so let's enhance the basic `Application` class and add a Boot `CommandLineRunner` which deletes and re-creates that folder at startup:
 
 `src/main/java/hello/Application.java`
 [source,java]
@@ -129,9 +130,6 @@ include::complete/src/main/java/hello/Application.java[]
 ----
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/spring-boot-application.adoc[]
-
-You also want a target folder to upload files to, so there is a Java 8 lambda used to create a Boot `CommandLineRunner` at startup which creates that folder.
-
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_subhead.adoc[]
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_with_both.adoc[]
