@@ -73,6 +73,16 @@ In this case:
 
 NOTE: In a production scenario, you more likely would store the files in a temporary location, a database, or perhaps a NoSQL store like http://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]. It's is best to NOT load up the file system of your application with content.
 
+You will need to provide a `StorageService` for the controller to interact with a storage layer (e.g. a file system). The interface is like this:
+
+`src/main/java/hello/storage/StorageService.java`
+[source,java]
+----
+include::complete/src/main/java/hello//storage/StorageService.java[]
+----
+
+There is an example implementation of the interface in the sample app. You could copy and paste it if you want to save time.
+
 == Creating a simple HTML template
 
 To build something of interest, the following Thymeleaf template is a nice example of uploading files as well as showing what's been uploaded.
