@@ -1,12 +1,13 @@
 package hello;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,6 +26,7 @@ import hello.storage.StorageService;
 @Controller
 public class FileUploadController {
 
+    @Autowired
     private final StorageService storageService;
 
     @Autowired
@@ -45,11 +47,16 @@ public class FileUploadController {
 
     @GetMapping("/files/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-
+    public ResponseEntity<byte[]> serveFile(@PathVariable String filename) throws IOException {
         Resource file = storageService.loadAsResource(filename);
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+        HttpHeaders headers = new HttpHeaders();
+        InputStream in = file.getInputStream();
+        byte[] media = IOUtils.toByteArray(in);
+        headers.setCacheControl(CacheControl.noCache().getHeaderValue());
+        headers.setContentType(MediaType.parseMediaType(file.getURL().openConnection().getContentType()));
+
+        ResponseEntity<byte[]> responseEntity = new ResponseEntity<>(media, headers, HttpStatus.OK);
+        return responseEntity;
     }
 
     @PostMapping("/")
