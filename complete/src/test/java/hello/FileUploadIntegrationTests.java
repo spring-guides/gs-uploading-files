@@ -61,8 +61,8 @@ public class FileUploadIntegrationTests {
 				.getForEntity("/files/{filename}", String.class, "testupload.txt");
 
 		assertThat(response.getStatusCodeValue()).isEqualTo(200);
-		assertThat(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION))
-				.isEqualTo("attachment; filename=\"testupload.txt\"");
+		assertThat(response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE))
+                .isEqualTo("text/plain");
 		assertThat(response.getBody()).isEqualTo("Spring Framework");
 	}
 
