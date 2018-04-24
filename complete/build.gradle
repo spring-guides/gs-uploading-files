@@ -27,6 +27,7 @@ targetCompatibility = 1.8
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
