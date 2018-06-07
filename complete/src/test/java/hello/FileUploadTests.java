@@ -19,6 +19,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,7 +53,7 @@ public class FileUploadTests {
 	public void shouldSaveUploadedFile() throws Exception {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.txt",
 				"text/plain", "Spring Framework".getBytes());
-		this.mvc.perform(fileUpload("/").file(multipartFile))
+		this.mvc.perform(multipart("/").file(multipartFile))
 				.andExpect(status().isFound())
 				.andExpect(header().string("Location", "/"));
 
