@@ -1,9 +1,9 @@
 :spring_version: current
 :spring_boot_version: 1.5.10.RELEASE
-:Controller: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Controller.html
-:SpringApplication: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/SpringApplication.html
-:ResponseBody: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html
-:SpringBootApplication: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/autoconfigure/SpringBootApplication.html
+:Controller: https://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Controller.html
+:SpringApplication: https://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/SpringApplication.html
+:ResponseBody: https://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html
+:SpringBootApplication: https://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/autoconfigure/SpringBootApplication.html
 :toc:
 :icons: font
 :source-highlighter: prettify
@@ -67,7 +67,7 @@ In this case:
 * `GET /files/{filename}` loads the resource if it exists, and sends it to the browser to download using a `"Content-Disposition"` response header
 * `POST /` is geared to handle a multi-part message `file` and give it to the `StorageService` for saving
 
-NOTE: In a production scenario, you more likely would store the files in a temporary location, a database, or perhaps a NoSQL store like http://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]. It's is best to NOT load up the file system of your application with content.
+NOTE: In a production scenario, you more likely would store the files in a temporary location, a database, or perhaps a NoSQL store like https://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]. It's is best to NOT load up the file system of your application with content.
 
 You will need to provide a `StorageService` for the controller to interact with a storage layer (e.g. a file system). The interface is like this:
 
@@ -91,7 +91,7 @@ include::complete/src/main/resources/templates/uploadForm.html[]
 
 This template has three parts:
 
-* An optional message at the top where Spring MVC writes a http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-flash-attributes[flash-scoped messages].
+* An optional message at the top where Spring MVC writes a https://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-flash-attributes[flash-scoped messages].
 * A form allowing the user to upload files
 * A list of files supplied from the backend
 
