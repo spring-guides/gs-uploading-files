@@ -1,4 +1,4 @@
-package hello;
+package com.example.uploadingfiles;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +22,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Matchers.any;
 
-import hello.storage.StorageService;
+import com.example.uploadingfiles.storage.StorageService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

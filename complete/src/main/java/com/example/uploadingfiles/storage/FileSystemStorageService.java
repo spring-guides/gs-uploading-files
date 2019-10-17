@@ -1,4 +1,4 @@
-package hello.storage;
+package com.example.uploadingfiles.storage;
 
 import java.io.IOException;
 import java.io.InputStream;
