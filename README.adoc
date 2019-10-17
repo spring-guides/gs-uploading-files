@@ -9,155 +9,223 @@
 :source-highlighter: prettify
 :project_id: gs-uploading-files
 
-This guide walks you through the process of creating a server application that can receive HTTP multi-part file uploads.
+This guide walks you through the process of creating a server application that can receive
+HTTP multi-part file uploads.
 
-== What you'll build
+== What You Will Build
 
-You will create a Spring Boot web application that accepts file uploads. You will also build a simple HTML interface to upload a test file.
+You will create a Spring Boot web application that accepts file uploads. You will also
+build a simple HTML interface to upload a test file.
 
-
-== What you'll need
+== What You Need
 
 :java_version: 1.8
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/prereq_editor_jdk_buildtools.adoc[]
 
-
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/how_to_complete_this_guide.adoc[]
 
+[[scratch]]
+== Starting with Spring Initializr
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/hide-show-gradle.adoc[]
+For all Spring applications, you should start with the https://start.spring.io[Spring
+Initializr]. The Initializr offers a fast way to pull in all the dependencies you need for
+an application and does a lot of the setup for you. This example needs the Spring Web and
+Thymeleaf dependencies. The following image shows the Initializr set up for this sample
+project:
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/hide-show-maven.adoc[]
+image::images/initializr.png[]
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/hide-show-sts.adoc[]
+NOTE: The preceding image shows the Initializr with Maven chosen as the build tool. You
+can also use Gradle. It also shows values of `com.example` and `uploading-files` as the
+Group and Artifact, respectively. You will use those values throughout the rest of this
+sample.
 
+The following listing shows the `pom.xml` file that is created when you choose Maven:
 
+====
+[source,xml]
+----
+include::initial/pom.xml[]
+----
+====
+
+The following listing shows the `build.gradle` file that is created when you choose Gradle:
+
+====
+[source,text]
+----
+include::initial/build.gradle[]
+----
+====
 
 [[initial]]
-== Create an Application class
+== Create an Application Class
 
-To start a Spring Boot MVC application, we first need a starter; here, `spring-boot-starter-thymeleaf` and `spring-boot-starter-web` are already added as dependencies. To upload files with Servlet containers, you need to register a `MultipartConfigElement` class (which would be `<multipart-config>` in web.xml). Thanks to Spring Boot, everything is auto-configured for you!
+To start a Spring Boot MVC application, you first need a starter. In this sample,
+`spring-boot-starter-thymeleaf` and `spring-boot-starter-web` are already added as
+dependencies. To upload files with Servlet containers, you need to register a
+`MultipartConfigElement` class (which would be `<multipart-config>` in web.xml). Thanks to
+Spring Boot, everything is auto-configured for you!
 
-All you need to get started with this application is the following `Application` class.
+All you need to get started with this application is the following
+`UploadingFilesApplication` class (from
+`src/main/java/com/example/uploadingfiles/UploadingFilesApplication.java`):
 
-`src/main/java/hello/Application.java`
-[source,java,tabsize=2]
+====
+[source,java]
 ----
-include::initial/src/main/java/hello/Application.java[]
+include::initial/src/main/java/com/example/uploadingfiles/UploadingFilesApplication.java[]
 ----
+====
 
-As part of auto-configuring Spring MVC, Spring Boot will create a `MultipartConfigElement` bean and make itself ready for file uploads.
+As part of auto-configuring Spring MVC, Spring Boot will create a `MultipartConfigElement`
+bean and make itself ready for file uploads.
 
+== Create a File Upload Controller
 
-== Create a file upload controller
+The initial application already contains a few classes to deal with storing and loading
+the uploaded files on disk. They are all located in the
+`com.example.uploadingfiles.storage` package. You will use those in your new
+`FileUploadController`. The following listing (from
+`src/main/java/com/example/uploadingfiles/FileUploadController.java`) shows the file
+upload controller:
 
-The initial application already contains a few classes to deal with storing and loading the uploaded files on disk; they're all located in the `hello.storage` package. We'll use those in our new `FileUploadController`.
-
-`src/main/java/hello/FileUploadController.java`
-[source,java,tabsize=2]
+====
+[source,java]
 ----
-include::complete/src/main/java/hello/FileUploadController.java[]
+include::complete/src/main/java/com/example/uploadingfiles/FileUploadController.java[]
 ----
+====
 
-This class is annotated with `@Controller` so Spring MVC can pick it up and look for routes. Each method is tagged with `@GetMapping` or `@PostMapping` to tie the path and the HTTP action to a particular Controller action.
+The `FileUploadController` class is annotated with `@Controller` so that Spring MVC can
+pick it up and look for routes. Each method is tagged with `@GetMapping` or `@PostMapping`
+to tie the path and the HTTP action to a particular controller action.
 
 In this case:
 
-* `GET /` looks up the current list of uploaded files from the `StorageService` and loads it into a Thymeleaf template. It calculates a link to the actual resource using `MvcUriComponentsBuilder`
-* `GET /files/{filename}` loads the resource if it exists, and sends it to the browser to download using a `"Content-Disposition"` response header
-* `POST /` is geared to handle a multi-part message `file` and give it to the `StorageService` for saving
+* `GET /`: Looks up the current list of uploaded files from the `StorageService` and loads
+it into a Thymeleaf template. It calculates a link to the actual resource by using
+`MvcUriComponentsBuilder`.
+* `GET /files/{filename}`: Loads the resource (if it exists) and sends it to the browser
+to download by using a `Content-Disposition` response header.
+* `POST /`: Handles a multi-part message `file` and gives it to the `StorageService` for
+saving.
 
-NOTE: In a production scenario, you more likely would store the files in a temporary location, a database, or perhaps a NoSQL store like https://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]. It is best to NOT load up the file system of your application with content.
+NOTE: In a production scenario, you more likely would store the files in a temporary
+location, a database, or perhaps a NoSQL store (such as
+https://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]). It is best to NOT load up
+the file system of your application with content.
 
-You will need to provide a `StorageService` for the controller to interact with a storage layer (e.g. a file system). The interface is like this:
+You will need to provide a `StorageService` so that the controller can interact with a
+storage layer (such as a file system). The following listing (from
+`src/main/java/com/example/uploadingfiles/storage/StorageService.java`) shows that
+interface:
 
-`src/main/java/hello/storage/StorageService.java`
-[source,java,tabsize=2]
+====
+[source,java]
 ----
-include::complete/src/main/java/hello//storage/StorageService.java[]
+include::complete/src/main/java/com/example/uploadingfiles//storage/StorageService.java[]
 ----
+====
 
-There is an example implementation of the interface in the sample app. You could copy and paste it if you want to save time.
+== Creating an HTML Template
 
-== Creating a simple HTML template
+The following Thymeleaf template (from `src/main/resources/templates/uploadForm.html`)
+shows an example of how to upload files and show what has been uploaded:
 
-To build something of interest, the following Thymeleaf template is a nice example of uploading files as well as showing what's been uploaded.
-
-`src/main/resources/templates/uploadForm.html`
+====
 [source,xml]
 ----
 include::complete/src/main/resources/templates/uploadForm.html[]
 ----
+====
 
 This template has three parts:
 
-* An optional message at the top where Spring MVC writes a https://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-flash-attributes[flash-scoped messages].
-* A form allowing the user to upload files
-* A list of files supplied from the backend
+* An optional message at the top where Spring MVC writes a
+ https://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-flash-attributes[flash-scoped message].
+* A form that lets the user upload files.
+* A list of files supplied from the backend.
 
+== Tuning File Upload Limits
 
-== Tuning file upload limits
+When configuring file uploads, it is often useful to set limits on the size of files.
+Imagine trying to handle a 5GB file upload! With Spring Boot, we can tune its
+auto-configured `MultipartConfigElement` with some property settings.
 
-When configuring file uploads, it is often useful to set limits on the size of files. Imagine trying to handle a 5GB file upload! With Spring Boot, we can tune its auto-configured `MultipartConfigElement` with some property settings.
+Add the following properties to your existing properties settings (in
+`src/main/resources/application.properties`):
 
-Add the following properties to your existing properties settings:
-
-`src/main/resources/application.properties`
-[source,java,tabsize=2]
+====
+[source,java]
 ----
 include::complete/src/main/resources/application.properties[]
 ----
+====
 
 The multipart settings are constrained as follows:
 
-* `spring.http.multipart.max-file-size` is set to 128KB, meaning total file size cannot exceed 128KB.
-* `spring.http.multipart.max-request-size` is set to 128KB, meaning total request size for a `multipart/form-data` cannot exceed 128KB.
+* `spring.http.multipart.max-file-size` is set to 128KB, meaning total file size cannot
+exceed 128KB.
+* `spring.http.multipart.max-request-size` is set to 128KB, meaning total request size for
+a `multipart/form-data` cannot exceed 128KB.
 
-== Make the application executable
+== Run the Application
 
-Although it is possible to package this service as a traditional link:/understanding/WAR[WAR] file for deployment to an external application server, the simpler approach demonstrated below creates a _standalone application_. You package everything in a single, executable JAR file, driven by a good old Java `main()` method. And along the way, you use Spring's support for embedding the link:/understanding/Tomcat[Tomcat] servlet container as the HTTP runtime, instead of deploying to an external instance.
+You want a target folder to which to upload files, so you need to enhance the basic
+`UploadingFilesApplication` class that Spring Initializr created and add a Boot
+`CommandLineRunner` to delete and re-create that folder at startup. The following listing
+(from `src/main/java/com/example/uploadingfiles/UploadingFilesApplication.java`) shows how
+to do so:
 
-You also want a target folder to upload files to, so let's enhance the basic `Application` class and add a Boot `CommandLineRunner` which deletes and re-creates that folder at startup:
-
-`src/main/java/hello/Application.java`
-[source,java,tabsize=2]
+====
+[source,java]
 ----
-include::complete/src/main/java/hello/Application.java[]
+include::complete/src/main/java/com/example/uploadingfiles/UploadingFilesApplication.java[]
 ----
+====
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/spring-boot-application.adoc[]
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/spring-boot-application-new-path.adoc[]
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_subhead.adoc[]
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_with_both.adoc[]
 
+That runs the server-side piece that receives file uploads. Logging output is displayed.
+The service should be up and running within a few seconds.
 
-That runs the server-side piece that receives file uploads. Logging output is displayed. The service should be up and running within a few seconds.
+With the server running, you need to open a browser and visit `http://localhost:8080/` to
+see the upload form. Pick a (small) file and press *Upload*. You should see the success
+page from the controller. If you choose a file that is too large, you will get an ugly
+error page.
 
-With the server running, you need to open a browser and visit http://localhost:8080/ to see the upload form. Pick a (small) file and press "Upload" and you should see the success page from the controller. Choose a file that is too large and you will get an ugly error page.
+You should then see a line resembling the following in your browser window:
 
-You should then see something like this in your browser window:
+"`You successfully uploaded <name of your file>!`"
 
-....
-You successfully uploaded <name of your file>!
-....
+== Testing Your Application
 
-== Testing your application
+There are multiple ways to test this particular feature in our application. The following
+listing (from `src/test/java/com/example/uploadingfiles/FileUploadTests.java`) shows one
+example that uses `MockMvc` so that it does not require starting the servlet container:
 
-There are multiple ways to test this particular feature in our application. Here's one example that leverages `MockMvc`, so it does not require to start the Servlet container:
-
-`src/test/java/hello/FileUploadTests.java`
-[source,java,tabsize=2]
+====
+[source,java]
 ----
-include::complete/src/test/java/hello/FileUploadTests.java[]
+include::complete/src/test/java/com/example/uploadingfiles/FileUploadTests.java[]
 ----
+====
 
-In those tests, we're using various mocks to set up the interactions with our Controller and the `StorageService` but also with the Servlet container itself by using `MockMultipartFile`.
+In those tests, you use various mocks to set up the interactions with your controller and
+the `StorageService` but also with the Servlet container itself by using
+`MockMultipartFile`.
 
-For an example of an integration test, please check out the `FileUploadIntegrationTests` class.
+For an example of an integration test, see the `FileUploadIntegrationTests` class (which
+is in `src/test/java/com/example/uploadingfiles`).
 
 == Summary
 
-Congratulations! You have just written a web application that uses Spring to handle file uploads.
+Congratulations! You have just written a web application that uses Spring to handle file
+uploads.
 
 == See Also
 

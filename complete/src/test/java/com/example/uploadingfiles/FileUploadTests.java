@@ -1,4 +1,4 @@
-package hello;
+package com.example.uploadingfiles;
 
 import java.nio.file.Paths;
 import java.util.stream.Stream;
@@ -24,8 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import hello.storage.StorageFileNotFoundException;
-import hello.storage.StorageService;
+import com.example.uploadingfiles.storage.StorageFileNotFoundException;
+import com.example.uploadingfiles.storage.StorageService;
 
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
