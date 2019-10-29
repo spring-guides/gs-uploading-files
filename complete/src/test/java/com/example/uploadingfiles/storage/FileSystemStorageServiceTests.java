@@ -17,8 +17,9 @@ package com.example.uploadingfiles.storage;
 
 import java.util.Random;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -34,7 +35,7 @@ public class FileSystemStorageServiceTests {
 	private StorageProperties properties = new StorageProperties();
 	private FileSystemStorageService service;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		properties.setLocation("target/files/" + Math.abs(new Random().nextLong()));
 		service = new FileSystemStorageService(properties);
@@ -49,20 +50,22 @@ public class FileSystemStorageServiceTests {
 	@Test
 	public void saveAndLoad() {
 		service.store(new MockMultipartFile("foo", "foo.txt", MediaType.TEXT_PLAIN_VALUE,
-				"Hello World".getBytes()));
+				"Hello, World".getBytes()));
 		assertThat(service.load("foo.txt")).exists();
 	}
 
-	@Test(expected = StorageException.class)
+	@Test
 	public void saveNotPermitted() {
-		service.store(new MockMultipartFile("foo", "../foo.txt",
-				MediaType.TEXT_PLAIN_VALUE, "Hello World".getBytes()));
+		assertThrows(StorageException.class, () -> {
+			service.store(new MockMultipartFile("foo", "../foo.txt",
+			MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
+		});
 	}
 
 	@Test
 	public void savePermitted() {
 		service.store(new MockMultipartFile("foo", "bar/../foo.txt",
-				MediaType.TEXT_PLAIN_VALUE, "Hello World".getBytes()));
+				MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
 	}
 
 }
