@@ -1,4 +1,4 @@
-package hello.storage;
+package com.example.uploadingfiles.storage;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
