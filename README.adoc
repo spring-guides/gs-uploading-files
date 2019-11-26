@@ -41,7 +41,7 @@ To start a Spring Boot MVC application, we first need a starter; here, `spring-b
 All you need to get started with this application is the following `Application` class.
 
 `src/main/java/hello/Application.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::initial/src/main/java/hello/Application.java[]
 ----
@@ -54,7 +54,7 @@ As part of auto-configuring Spring MVC, Spring Boot will create a `MultipartConf
 The initial application already contains a few classes to deal with storing and loading the uploaded files on disk; they're all located in the `hello.storage` package. We'll use those in our new `FileUploadController`.
 
 `src/main/java/hello/FileUploadController.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/hello/FileUploadController.java[]
 ----
@@ -72,7 +72,7 @@ NOTE: In a production scenario, you more likely would store the files in a tempo
 You will need to provide a `StorageService` for the controller to interact with a storage layer (e.g. a file system). The interface is like this:
 
 `src/main/java/hello/storage/StorageService.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/hello//storage/StorageService.java[]
 ----
@@ -103,7 +103,7 @@ When configuring file uploads, it is often useful to set limits on the size of f
 Add the following properties to your existing properties settings:
 
 `src/main/resources/application.properties`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/resources/application.properties[]
 ----
@@ -120,7 +120,7 @@ Although it is possible to package this service as a traditional link:/understan
 You also want a target folder to upload files to, so let's enhance the basic `Application` class and add a Boot `CommandLineRunner` which deletes and re-creates that folder at startup:
 
 `src/main/java/hello/Application.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/hello/Application.java[]
 ----
@@ -146,7 +146,7 @@ You successfully uploaded <name of your file>!
 There are multiple ways to test this particular feature in our application. Here's one example that leverages `MockMvc`, so it does not require to start the Servlet container:
 
 `src/test/java/hello/FileUploadTests.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/test/java/hello/FileUploadTests.java[]
 ----

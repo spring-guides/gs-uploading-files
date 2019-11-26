@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *	  https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,38 +31,38 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class FileSystemStorageServiceTests {
 
-    private StorageProperties properties = new StorageProperties();
-    private FileSystemStorageService service;
+	private StorageProperties properties = new StorageProperties();
+	private FileSystemStorageService service;
 
-    @Before
-    public void init() {
-        properties.setLocation("target/files/" + Math.abs(new Random().nextLong()));
-        service = new FileSystemStorageService(properties);
-        service.init();
-    }
+	@Before
+	public void init() {
+		properties.setLocation("target/files/" + Math.abs(new Random().nextLong()));
+		service = new FileSystemStorageService(properties);
+		service.init();
+	}
 
-    @Test
-    public void loadNonExistent() {
-        assertThat(service.load("foo.txt")).doesNotExist();
-    }
+	@Test
+	public void loadNonExistent() {
+		assertThat(service.load("foo.txt")).doesNotExist();
+	}
 
-    @Test
-    public void saveAndLoad() {
-        service.store(new MockMultipartFile("foo", "foo.txt", MediaType.TEXT_PLAIN_VALUE,
-                "Hello World".getBytes()));
-        assertThat(service.load("foo.txt")).exists();
-    }
+	@Test
+	public void saveAndLoad() {
+		service.store(new MockMultipartFile("foo", "foo.txt", MediaType.TEXT_PLAIN_VALUE,
+				"Hello World".getBytes()));
+		assertThat(service.load("foo.txt")).exists();
+	}
 
-    @Test(expected = StorageException.class)
-    public void saveNotPermitted() {
-        service.store(new MockMultipartFile("foo", "../foo.txt",
-                MediaType.TEXT_PLAIN_VALUE, "Hello World".getBytes()));
-    }
+	@Test(expected = StorageException.class)
+	public void saveNotPermitted() {
+		service.store(new MockMultipartFile("foo", "../foo.txt",
+				MediaType.TEXT_PLAIN_VALUE, "Hello World".getBytes()));
+	}
 
-    @Test
-    public void savePermitted() {
-        service.store(new MockMultipartFile("foo", "bar/../foo.txt",
-                MediaType.TEXT_PLAIN_VALUE, "Hello World".getBytes()));
-    }
+	@Test
+	public void savePermitted() {
+		service.store(new MockMultipartFile("foo", "bar/../foo.txt",
+				MediaType.TEXT_PLAIN_VALUE, "Hello World".getBytes()));
+	}
 
 }
