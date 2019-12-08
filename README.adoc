@@ -67,7 +67,7 @@ In this case:
 * `GET /files/{filename}` loads the resource if it exists, and sends it to the browser to download using a `"Content-Disposition"` response header
 * `POST /` is geared to handle a multi-part message `file` and give it to the `StorageService` for saving
 
-NOTE: In a production scenario, you more likely would store the files in a temporary location, a database, or perhaps a NoSQL store like https://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]. It's is best to NOT load up the file system of your application with content.
+NOTE: In a production scenario, you more likely would store the files in a temporary location, a database, or perhaps a NoSQL store like https://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]. It is best to NOT load up the file system of your application with content.
 
 You will need to provide a `StorageService` for the controller to interact with a storage layer (e.g. a file system). The interface is like this:
 
