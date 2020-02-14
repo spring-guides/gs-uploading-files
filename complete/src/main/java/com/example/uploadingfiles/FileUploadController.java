@@ -37,7 +37,7 @@ public class FileUploadController {
 
 		model.addAttribute("files", storageService.loadAll().map(
 				path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
-						"serveFile", path.getFileName().toString()).build().toString())
+						"serveFile", path.getFileName().toString()).build().toUri())
 				.collect(Collectors.toList()));
 
 		return "uploadForm";
