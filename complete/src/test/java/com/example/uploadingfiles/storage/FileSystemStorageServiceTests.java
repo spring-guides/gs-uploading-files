@@ -71,6 +71,14 @@ public class FileSystemStorageServiceTests {
 	}
 
 	@Test
+	public void saveAbsolutePathInNameNotPermitted() {
+		assertThrows(StorageException.class, () -> {
+			service.store(new MockMultipartFile("\\etc\\passwd", "\\etc\\passwd",
+					MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
+		});
+	}
+
+	@Test
 	public void savePermitted() {
 		service.store(new MockMultipartFile("foo", "bar/../foo.txt",
 				MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
