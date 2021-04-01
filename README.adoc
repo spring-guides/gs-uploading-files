@@ -169,9 +169,9 @@ include::complete/src/main/resources/application.properties[]
 
 The multipart settings are constrained as follows:
 
-* `spring.http.multipart.max-file-size` is set to 128KB, meaning total file size cannot
+* `spring.servlet.multipart.max-file-size` is set to 128KB, meaning total file size cannot
 exceed 128KB.
-* `spring.http.multipart.max-request-size` is set to 128KB, meaning total request size for
+* `spring.servlet.multipart.max-request-size` is set to 128KB, meaning total request size for
 a `multipart/form-data` cannot exceed 128KB.
 
 == Run the Application
