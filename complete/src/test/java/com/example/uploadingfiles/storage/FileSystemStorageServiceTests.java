@@ -47,6 +47,15 @@ public class FileSystemStorageServiceTests {
 		service.init();
 	}
 
+    @Test
+    public void emptyUploadLocation() {
+        service = null;
+        properties.setLocation("");
+        assertThrows(StorageException.class, () -> {
+            service = new FileSystemStorageService(properties);
+		});
+    }
+
 	@Test
 	public void loadNonExistent() {
 		assertThat(service.load("foo.txt")).doesNotExist();
