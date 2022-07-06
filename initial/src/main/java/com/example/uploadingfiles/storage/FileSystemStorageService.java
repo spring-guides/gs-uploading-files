@@ -21,6 +21,11 @@ public class FileSystemStorageService implements StorageService {
 
 	@Autowired
 	public FileSystemStorageService(StorageProperties properties) {
+
+        if(properties.getLocation().trim().length() == 0){
+            throw new StorageException("File upload location can not be Empty."); 
+        }
+
 		this.rootLocation = Paths.get(properties.getLocation());
 	}
 
