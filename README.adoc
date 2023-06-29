@@ -1,5 +1,5 @@
 :spring_version: current
-:spring_boot_version: 3.1.0
+:spring_boot_version: 3.1.1
 :Controller: https://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Controller.html
 :SpringApplication: https://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/SpringApplication.html
 :ResponseBody: https://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html
@@ -111,6 +111,36 @@ include::complete/src/main/java/com/example/uploadingfiles//storage/StorageServi
 ----
 ====
 
+You also need four classes to support the storage service:
+
+====
+[source,java]
+----
+include::complete/src/main/java/com/example/uploadingfiles//storage/StorageProperties.java[]
+----
+====
+
+====
+[source,java]
+----
+include::complete/src/main/java/com/example/uploadingfiles//storage/StorageException.java[]
+----
+====
+
+====
+[source,java]
+----
+include::complete/src/main/java/com/example/uploadingfiles//storage/StorageFileNotFoundException.java[]
+----
+====
+
+====
+[source,java]
+----
+include::complete/src/main/java/com/example/uploadingfiles//storage/FileSystemStorageService.java[]
+----
+====
+
 == Creating an HTML Template
 
 The following Thymeleaf template (from `src/main/resources/templates/uploadForm.html`)
@@ -153,7 +183,7 @@ exceed 128KB.
 * `spring.servlet.multipart.max-request-size` is set to 128KB, meaning total request size for
 a `multipart/form-data` cannot exceed 128KB.
 
-== Run the Application
+== Update the Application
 
 You want a target folder to which to upload files, so you need to enhance the basic
 `UploadingFilesApplication` class that Spring Initializr created and add a Boot
@@ -167,6 +197,8 @@ to do so:
 include::complete/src/main/java/com/example/uploadingfiles/UploadingFilesApplication.java[]
 ----
 ====
+
+== Run the Application
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/main/spring-boot-application-new-path.adoc[]
 
