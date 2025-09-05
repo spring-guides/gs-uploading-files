@@ -4,7 +4,7 @@
 :project_id: gs-uploading-files
 
 This guide walks you through the process of creating a server application that can receive
-HTTP multi-part file uploads.
+HTTP multipart file uploads.
 
 == What You Will Build
 
@@ -26,14 +26,14 @@ To manually initialize the project:
 
 . Navigate to https://start.spring.io.
 This service pulls in all the dependencies you need for an application and does most of the setup for you.
-. Choose either Gradle or Maven and the language you want to use. This guide assumes that you chose Java.
+. Choose either Gradle or Maven and the language you want to use.
 . Click *Dependencies* and select *Spring Web* and *Thymeleaf*.
 . Click *Generate*.
 . Download the resulting ZIP file, which is an archive of a web application that is configured with your choices.
 
 NOTE: If your IDE has the Spring Initializr integration, you can complete this process from your IDE.
 
-NOTE: You can also fork the project from Github and open it in your IDE or other editor.
+NOTE: You can also fork the project from GitHub and open it in your IDE or other editor.
 
 [[initial]]
 == Create an Application Class
@@ -42,20 +42,25 @@ To start a Spring Boot MVC application, you first need a starter. In this sample
 `spring-boot-starter-thymeleaf` and `spring-boot-starter-web` are already added as
 dependencies. To upload files with Servlet containers, you need to register a
 `MultipartConfigElement` class (which would be `<multipart-config>` in web.xml). Thanks to
-Spring Boot, everything is auto-configured for you!
+Spring Boot, everything is autoconfigured for you!
 
 All you need to get started with this application is the following
-`UploadingFilesApplication` class (from
-`src/main/java/com/example/uploadingfiles/UploadingFilesApplication.java`):
+`UploadingFilesApplication` class:
 
 ====
-[source,java]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 include::initial/src/main/java/com/example/uploadingfiles/UploadingFilesApplication.java[]
 ----
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::initial-kotlin/src/main/kotlin/com/example/uploadingfiles/UploadingFilesApplication.kt[]
+----
 ====
 
-As part of auto-configuring Spring MVC, Spring Boot will create a `MultipartConfigElement`
+As part of autoconfiguring Spring MVC, Spring Boot will create a `MultipartConfigElement`
 bean and make itself ready for file uploads.
 
 == Create a File Upload Controller
@@ -63,14 +68,19 @@ bean and make itself ready for file uploads.
 The initial application already contains a few classes to deal with storing and loading
 the uploaded files on disk. They are all located in the
 `com.example.uploadingfiles.storage` package. You will use those in your new
-`FileUploadController`. The following listing (from
-`src/main/java/com/example/uploadingfiles/FileUploadController.java`) shows the file
+`FileUploadController`. The following listing shows the file
 upload controller:
 
 ====
-[source,java]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 include::complete/src/main/java/com/example/uploadingfiles/FileUploadController.java[]
+----
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::complete-kotlin/src/main/kotlin/com/example/uploadingfiles/FileUploadController.kt[]
 ----
 ====
 
@@ -85,7 +95,7 @@ it into a Thymeleaf template. It calculates a link to the actual resource by usi
 `MvcUriComponentsBuilder`.
 * `GET /files/{filename}`: Loads the resource (if it exists) and sends it to the browser
 to download by using a `Content-Disposition` response header.
-* `POST /`: Handles a multi-part message `file` and gives it to the `StorageService` for
+* `POST /`: Handles a multipart message `file` and gives it to the `StorageService` for
 saving.
 
 NOTE: In a production scenario, you more likely would store the files in a temporary
@@ -94,44 +104,73 @@ https://docs.mongodb.org/manual/core/gridfs[Mongo's GridFS]). It is best to NOT 
 the file system of your application with content.
 
 You will need to provide a `StorageService` so that the controller can interact with a
-storage layer (such as a file system). The following listing (from
-`src/main/java/com/example/uploadingfiles/storage/StorageService.java`) shows that
+storage layer (such as a file system). The following listing shows that
 interface:
 
 ====
-[source,java]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
-include::complete/src/main/java/com/example/uploadingfiles//storage/StorageService.java[]
+include::complete/src/main/java/com/example/uploadingfiles/storage/StorageService.java[]
+----
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::complete-kotlin/src/main/kotlin/com/example/uploadingfiles/storage/StorageService.kt[]
 ----
 ====
 
 You also need four classes to support the storage service:
 
 ====
-[source,java]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
-include::complete/src/main/java/com/example/uploadingfiles//storage/StorageProperties.java[]
+include::complete/src/main/java/com/example/uploadingfiles/storage/StorageProperties.java[]
 ----
-====
-
-====
-[source,java]
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
 ----
-include::complete/src/main/java/com/example/uploadingfiles//storage/StorageException.java[]
-----
-====
-
-====
-[source,java]
-----
-include::complete/src/main/java/com/example/uploadingfiles//storage/StorageFileNotFoundException.java[]
+include::complete-kotlin/src/main/kotlin/com/example/uploadingfiles/storage/StorageProperties.kt[]
 ----
 ====
 
 ====
-[source,java]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
-include::complete/src/main/java/com/example/uploadingfiles//storage/FileSystemStorageService.java[]
+include::complete/src/main/java/com/example/uploadingfiles/storage/StorageException.java[]
+----
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::complete-kotlin/src/main/kotlin/com/example/uploadingfiles/storage/StorageException.kt[]
+----
+====
+
+====
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
+----
+include::complete/src/main/java/com/example/uploadingfiles/storage/StorageFileNotFoundException.java[]
+----
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::complete-kotlin/src/main/kotlin/com/example/uploadingfiles/storage/StorageFileNotFoundException.kt[]
+----
+====
+
+====
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
+----
+include::complete/src/main/java/com/example/uploadingfiles/storage/FileSystemStorageService.java[]
+----
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::complete-kotlin/src/main/kotlin/com/example/uploadingfiles/storage/FileSystemStorageService.kt[]
 ----
 ====
 
@@ -150,7 +189,7 @@ include::complete/src/main/resources/templates/uploadForm.html[]
 This template has three parts:
 
 * An optional message at the top where Spring MVC writes a
- https://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-flash-attributes[flash-scoped message].
+https://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-flash-attributes[flash-scoped message].
 * A form that lets the user upload files.
 * A list of files supplied from the backend.
 
@@ -158,7 +197,7 @@ This template has three parts:
 
 When configuring file uploads, it is often useful to set limits on the size of files.
 Imagine trying to handle a 5GB file upload! With Spring Boot, we can tune its
-auto-configured `MultipartConfigElement` with some property settings.
+autoconfigured `MultipartConfigElement` with some property settings.
 
 Add the following properties to your existing properties settings (in
 `src/main/resources/application.properties`):
@@ -172,7 +211,7 @@ include::complete/src/main/resources/application.properties[]
 
 The multipart settings are constrained as follows:
 
-* `spring.servlet.multipart.max-file-size` is set to 128KB, meaning total file size cannot
+* `spring.servlet.multipart.max-file-size` is set to 128KB, meaning the total file size cannot
 exceed 128KB.
 * `spring.servlet.multipart.max-request-size` is set to 128KB, meaning total request size for
 a `multipart/form-data` cannot exceed 128KB.
@@ -182,13 +221,18 @@ a `multipart/form-data` cannot exceed 128KB.
 You want a target folder to which to upload files, so you need to enhance the basic
 `UploadingFilesApplication` class that Spring Initializr created and add a Boot
 `CommandLineRunner` to delete and re-create that folder at startup. The following listing
-(from `src/main/java/com/example/uploadingfiles/UploadingFilesApplication.java`) shows how
-to do so:
+shows how to do so:
 
 ====
-[source,java]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 include::complete/src/main/java/com/example/uploadingfiles/UploadingFilesApplication.java[]
+----
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::complete-kotlin/src/main/kotlin/com/example/uploadingfiles/UploadingFilesApplication.kt[]
 ----
 ====
 
@@ -214,13 +258,18 @@ You should then see a line resembling the following in your browser window:
 == Testing Your Application
 
 There are multiple ways to test this particular feature in our application. The following
-listing (from `src/test/java/com/example/uploadingfiles/FileUploadTests.java`) shows one
-example that uses `MockMvc` so that it does not require starting the servlet container:
+listing shows one example that uses `MockMvc` so that it does not require starting the servlet container:
 
 ====
-[source,java]
+[source,java,indent=0,subs="verbatim,quotes",role="primary"]
+.Java
 ----
 include::complete/src/test/java/com/example/uploadingfiles/FileUploadTests.java[]
+----
+[source,kotlin,indent=0,subs="verbatim,quotes",role="secondary"]
+.Kotlin
+----
+include::complete-kotlin/src/test/kotlin/com/example/uploadingfiles/FileUploadTests.kt[]
 ----
 ====
 
@@ -228,8 +277,7 @@ In those tests, you use various mocks to set up the interactions with your contr
 the `StorageService` but also with the Servlet container itself by using
 `MockMultipartFile`.
 
-For an example of an integration test, see the `FileUploadIntegrationTests` class (which
-is in `src/test/java/com/example/uploadingfiles`).
+For an example of an integration test, see the `FileUploadIntegrationTests` class.
 
 == Summary
 
