@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class FileSystemStorageServiceTests {
 
-	private StorageProperties properties = new StorageProperties();
+	private final StorageProperties properties = new StorageProperties();
 	private FileSystemStorageService service;
 
 	@BeforeEach
@@ -100,5 +100,4 @@ public class FileSystemStorageServiceTests {
 		service.store(new MockMultipartFile("foo", "bar/../foo.txt",
 				MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
 	}
-
 }

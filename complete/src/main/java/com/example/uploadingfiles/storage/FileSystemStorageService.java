@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -25,7 +25,7 @@ public class FileSystemStorageService implements StorageService {
 	@Autowired
 	public FileSystemStorageService(StorageProperties properties) {
         
-        if(properties.getLocation().trim().length() == 0){
+        if(properties.getLocation().trim().isEmpty()){
             throw new StorageException("File upload location can not be Empty."); 
         }
 
@@ -39,7 +39,7 @@ public class FileSystemStorageService implements StorageService {
 				throw new StorageException("Failed to store empty file.");
 			}
 			Path destinationFile = this.rootLocation.resolve(
-					Paths.get(file.getOriginalFilename()))
+					Paths.get(Objects.requireNonNull(file.getOriginalFilename())))
 					.normalize().toAbsolutePath();
 			if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
 				// This is a security check
@@ -58,15 +58,15 @@ public class FileSystemStorageService implements StorageService {
 
 	@Override
 	public Stream<Path> loadAll() {
-		try {
-			return Files.walk(this.rootLocation, 1)
+		try (Stream<Path> paths = Files.walk(this.rootLocation, 1)) {
+			return paths
 				.filter(path -> !path.equals(this.rootLocation))
-				.map(this.rootLocation::relativize);
+				.map(this.rootLocation::relativize)
+				.toList().stream();
 		}
 		catch (IOException e) {
 			throw new StorageException("Failed to read stored files", e);
 		}
-
 	}
 
 	@Override

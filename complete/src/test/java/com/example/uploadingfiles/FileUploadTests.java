@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.given;
@@ -31,7 +31,7 @@ public class FileUploadTests {
 	@Autowired
 	private MockMvc mvc;
 
-	@MockBean
+	@MockitoBean
 	private StorageService storageService;
 
 	@Test
@@ -56,7 +56,6 @@ public class FileUploadTests {
 		then(this.storageService).should().store(multipartFile);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void should404WhenMissingFile() throws Exception {
 		given(this.storageService.loadAsResource("test.txt"))
@@ -64,5 +63,4 @@ public class FileUploadTests {
 
 		this.mvc.perform(get("/files/test.txt")).andExpect(status().isNotFound());
 	}
-
 }

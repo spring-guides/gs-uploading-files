@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Service
@@ -22,7 +23,7 @@ public class FileSystemStorageService implements StorageService {
 	@Autowired
 	public FileSystemStorageService(StorageProperties properties) {
 
-        if(properties.getLocation().trim().length() == 0){
+        if(properties.getLocation().trim().isEmpty()){
             throw new StorageException("File upload location can not be Empty."); 
         }
 
@@ -35,7 +36,7 @@ public class FileSystemStorageService implements StorageService {
 			if (file.isEmpty()) {
 				throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
 			}
-			Files.copy(file.getInputStream(), this.rootLocation.resolve(file.getOriginalFilename()));
+			Files.copy(file.getInputStream(), this.rootLocation.resolve(Objects.requireNonNull(file.getOriginalFilename())));
 		} catch (IOException e) {
 			throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
 		}
@@ -43,14 +44,14 @@ public class FileSystemStorageService implements StorageService {
 
 	@Override
 	public Stream<Path> loadAll() {
-		try {
-			return Files.walk(this.rootLocation, 1)
+		try (Stream<Path> paths = Files.walk(this.rootLocation, 1)) {
+			return paths
 					.filter(path -> !path.equals(this.rootLocation))
-					.map(path -> this.rootLocation.relativize(path));
+					.map(this.rootLocation::relativize)
+					.toList().stream();
 		} catch (IOException e) {
 			throw new StorageException("Failed to read stored files", e);
 		}
-
 	}
 
 	@Override
