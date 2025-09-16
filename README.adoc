@@ -20,13 +20,13 @@ include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/
 [[scratch]]
 == Starting with Spring Initializr
 
-You can use this https://start.spring.io/#!type=maven-project&groupId=com.example&artifactId=uploading-files&name=uploading-files&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.uploading-files&dependencies=web,thymeleaf[pre-initialized project] and click Generate to download a ZIP file. This project is configured to fit the examples in this tutorial.
+You can use this https://start.spring.io/#!type=maven-project&groupId=com.example&artifactId=uploading-files&name=uploading-files&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.uploadingfiles&dependencies=web,thymeleaf[pre-initialized project] and click Generate to download a ZIP file. This project is configured to fit the examples in this tutorial.
 
 To manually initialize the project:
 
 . Navigate to https://start.spring.io.
 This service pulls in all the dependencies you need for an application and does most of the setup for you.
-. Choose either Gradle or Maven and the language you want to use.
+. Choose either Gradle or Maven and the language you want to use: Kotlin or Java.
 . Click *Dependencies* and select *Spring Web* and *Thymeleaf*.
 . Click *Generate*.
 . Download the resulting ZIP file, which is an archive of a web application that is configured with your choices.
