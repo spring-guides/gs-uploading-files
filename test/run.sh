@@ -16,7 +16,6 @@ rm -rf build
 
 cd ../complete
 ./mvnw clean package
-
 rm -rf target
 
 ./gradlew build
