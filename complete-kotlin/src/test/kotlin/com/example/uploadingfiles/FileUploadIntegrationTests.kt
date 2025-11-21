@@ -3,22 +3,22 @@ package com.example.uploadingfiles
 import com.example.uploadingfiles.storage.StorageService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.then
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
-import org.springframework.web.multipart.MultipartFile
+import java.net.http.HttpClient
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class FileUploadIntegrationTests {
@@ -26,7 +26,7 @@ class FileUploadIntegrationTests {
     @Autowired
     private lateinit var restTemplate: TestRestTemplate
 
-    @MockBean
+    @MockitoBean
     private lateinit var storageService: StorageService
 
     @LocalServerPort
@@ -46,15 +46,14 @@ class FileUploadIntegrationTests {
 
         val requestEntity = HttpEntity(map, headers)
 
-        // Create a TestRestTemplate that does not follow redirects (Spring Boot 3.5 defaults to following redirects)
-        val client = java.net.http.HttpClient.newBuilder()
-            .followRedirects(java.net.http.HttpClient.Redirect.NEVER)
-            .build()
-        val requestFactory = org.springframework.http.client.JdkClientHttpRequestFactory(client)
-        val noRedirect = org.springframework.boot.web.client.RestTemplateBuilder()
-            .rootUri("http://localhost:$port")
-            .requestFactory { _: org.springframework.boot.web.client.ClientHttpRequestFactorySettings -> requestFactory }
-            .build()
+
+        // Build a RestTemplate that does NOT follow redirects so we can assert 302/Location
+        val noRedirect = RestTemplateBuilder()
+            .rootUri("http://localhost:" + this.port)
+            .requestFactoryBuilder(
+                ClientHttpRequestFactoryBuilder.jdk()
+                    .withHttpClientCustomizer { it.followRedirects(HttpClient.Redirect.NEVER) }
+            ).build()
         val response = noRedirect.postForEntity(
             "/",
             requestEntity,

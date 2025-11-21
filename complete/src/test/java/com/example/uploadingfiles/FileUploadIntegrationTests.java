@@ -1,22 +1,26 @@
 package com.example.uploadingfiles;
 
+import java.net.http.HttpClient;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -29,7 +33,7 @@ public class FileUploadIntegrationTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	@MockBean
+	@MockitoBean
 	private StorageService storageService;
 
 	@LocalServerPort
@@ -50,13 +54,11 @@ public class FileUploadIntegrationTests {
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
 
 		// Build a RestTemplate that does NOT follow redirects so we can assert 302/Location
-		java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder()
-				.followRedirects(java.net.http.HttpClient.Redirect.NEVER)
-				.build();
-		org.springframework.http.client.JdkClientHttpRequestFactory requestFactory = new org.springframework.http.client.JdkClientHttpRequestFactory(client);
-		org.springframework.web.client.RestTemplate noRedirect = new org.springframework.boot.web.client.RestTemplateBuilder()
+		RestTemplate noRedirect = new RestTemplateBuilder()
 				.rootUri("http://localhost:" + this.port)
-				.requestFactory((org.springframework.boot.web.client.ClientHttpRequestFactorySettings s) -> requestFactory)
+				.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()
+						.withHttpClientCustomizer(customizer ->
+								customizer.followRedirects(HttpClient.Redirect.NEVER)))
 				.build();
 
 		ResponseEntity<String> response = noRedirect.postForEntity("/", requestEntity, String.class);

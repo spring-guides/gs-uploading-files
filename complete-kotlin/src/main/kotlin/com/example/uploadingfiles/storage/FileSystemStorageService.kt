@@ -15,7 +15,7 @@ import java.nio.file.StandardCopyOption
 import java.util.stream.Stream
 
 @Service
-class FileSystemStorageService @Autowired constructor(properties: StorageProperties) : StorageService {
+class FileSystemStorageService(properties: StorageProperties) : StorageService {
 
     private val rootLocation: Path
 
