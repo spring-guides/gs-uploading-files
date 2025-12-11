@@ -20,7 +20,7 @@ include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/
 [[scratch]]
 == Starting with Spring Initializr
 
-You can use this https://start.spring.io/#!type=maven-project&groupId=com.example&artifactId=uploading-files&name=uploading-files&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.uploading-files&dependencies=web,thymeleaf[pre-initialized project] and click Generate to download a ZIP file. This project is configured to fit the examples in this tutorial.
+You can use this https://start.spring.io/#!type=gradle-project&groupId=com.example&artifactId=uploading-files&language=java&jvmVersion=17&packageName=com.example.uploading-files&dependencies=web,thymeleaf[pre-initialized project] and click Generate to download a ZIP file. This project is configured to fit the examples in this tutorial.
 
 To manually initialize the project:
 
@@ -39,7 +39,7 @@ NOTE: You can also fork the project from GitHub and open it in your IDE or other
 == Create an Application Class
 
 To start a Spring Boot MVC application, you first need a starter. In this sample,
-`spring-boot-starter-thymeleaf` and `spring-boot-starter-web` are already added as
+`spring-boot-starter-thymeleaf` and `spring-boot-starter-webmvc` are already added as
 dependencies. To upload files with Servlet containers, you need to register a
 `MultipartConfigElement` class (which would be `<multipart-config>` in web.xml). Thanks to
 Spring Boot, everything is autoconfigured for you!

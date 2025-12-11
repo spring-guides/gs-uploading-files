@@ -31,13 +31,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * @author Dave Syer
- *
- */
 public class FileSystemStorageServiceTests {
 
 	private StorageProperties properties = new StorageProperties();
+
 	private FileSystemStorageService service;
 
 	@BeforeEach

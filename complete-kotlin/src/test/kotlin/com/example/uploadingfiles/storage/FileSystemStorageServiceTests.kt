@@ -29,13 +29,11 @@ import java.nio.file.Paths
 import kotlin.math.abs
 import kotlin.random.Random
 
-/**
- * @author Dave Syer
- *
- */
+
 class FileSystemStorageServiceTests {
 
     private val properties = StorageProperties()
+
     private lateinit var service: FileSystemStorageService
 
     @BeforeEach

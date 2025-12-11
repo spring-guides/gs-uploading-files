@@ -1,19 +1,17 @@
 plugins {
-	id("org.springframework.boot") version "3.5.4"
+	id("org.springframework.boot") version "4.0.0"
 	id("io.spring.dependency-management") version "1.1.7"
-	kotlin("jvm") version "1.9.25"
-	kotlin("plugin.spring") version "1.9.25"
+	kotlin("jvm") version "2.2.21"
+	kotlin("plugin.spring") version "2.2.21"
 }
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
 
-kotlin {
-    jvmToolchain(17)
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
 }
 
 repositories {
@@ -22,10 +20,17 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+}
+
+kotlin {
+	compilerOptions {
+		freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
+	}
 }
 
 tasks.withType<Test> {

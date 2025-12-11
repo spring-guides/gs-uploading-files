@@ -1,84 +1,69 @@
 package com.example.uploadingfiles
 
 import com.example.uploadingfiles.storage.StorageService
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
-import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.core.io.ClassPathResource
-import org.springframework.http.HttpEntity
+import org.springframework.core.io.Resource
+import org.springframework.http.ContentDisposition
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.web.servlet.client.RestTestClient
+import org.springframework.test.web.servlet.client.expectBody
 import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
 import java.net.http.HttpClient
+import java.util.stream.Stream
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class FileUploadIntegrationTests {
-
-    @Autowired
-    private lateinit var restTemplate: TestRestTemplate
+@AutoConfigureRestTestClient
+class FileUploadIntegrationTests @Autowired constructor(private val client: RestTestClient) {
 
     @MockitoBean
     private lateinit var storageService: StorageService
 
     @LocalServerPort
-    private var port: Int = 0
+    private val port = 0
 
     @Test
     fun shouldUploadFile() {
         val resource = ClassPathResource("testupload.txt", javaClass)
-        // When redirecting to GET "/" the controller calls storageService.loadAll(); stub it to avoid errors
-        given(storageService.loadAll()).willReturn(java.util.stream.Stream.empty())
 
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.MULTIPART_FORM_DATA
+        // In case of redirect, GET "/" calls storageService.loadAll(); stub it to avoid errors
+        BDDMockito.given(this.storageService.loadAll()).willReturn(Stream.empty())
 
-        val map: MultiValueMap<String, Any> = LinkedMultiValueMap<String, Any>()
+        val map = LinkedMultiValueMap<String, Any>()
         map.add("file", resource)
 
-        val requestEntity = HttpEntity(map, headers)
+        // Build a RestTestClient that does NOT follow redirects so we can assert 302/Location
+        val requestFactory: ClientHttpRequestFactory = ClientHttpRequestFactoryBuilder.jdk()
+            .withHttpClientCustomizer({ customizer -> customizer.followRedirects(HttpClient.Redirect.NEVER) })
+            .build()
+        val noRedirect = RestTestClient
+            .bindToServer(requestFactory)
+            .baseUrl("http://localhost:${this.port}")
+            .build()
 
-
-        // Build a RestTemplate that does NOT follow redirects so we can assert 302/Location
-        val noRedirect = RestTemplateBuilder()
-            .rootUri("http://localhost:" + this.port)
-            .requestFactoryBuilder(
-                ClientHttpRequestFactoryBuilder.jdk()
-                    .withHttpClientCustomizer { it.followRedirects(HttpClient.Redirect.NEVER) }
-            ).build()
-        val response = noRedirect.postForEntity(
-            "/",
-            requestEntity,
-            String::class.java
-        )
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.FOUND)
-        assertThat(response.headers.location.toString())
-            .startsWith("http://localhost:$port/")
+        noRedirect.post().uri("/").contentType(MediaType.MULTIPART_FORM_DATA)
+            .body(map).exchange()
+            .expectStatus().isFound()
+            .expectHeader().valueMatches(HttpHeaders.LOCATION, "http://localhost:${this.port}/.*")
     }
 
     @Test
     fun shouldDownloadFile() {
         val resource = ClassPathResource("testupload.txt", javaClass)
-        given(storageService.loadAsResource("testupload.txt")).willReturn(resource)
+        BDDMockito.given<Resource?>(this.storageService.loadAsResource("testupload.txt")).willReturn(resource)
 
-        val response = restTemplate.getForEntity(
-            "/files/{filename}",
-            String::class.java,
-            "testupload.txt"
-        )
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.headers.getFirst(HttpHeaders.CONTENT_DISPOSITION))
-            .isEqualTo("attachment; filename=\"testupload.txt\"")
-        assertThat(response.body).isEqualTo("Spring Framework")
+        this.client.get().uri("/files/{filename}", "testupload.txt").exchangeSuccessfully()
+            .expectHeader().contentDisposition(ContentDisposition.attachment().filename("testupload.txt").build())
+            .expectBody<String>()
+            .isEqualTo("Spring Framework")
     }
 }
