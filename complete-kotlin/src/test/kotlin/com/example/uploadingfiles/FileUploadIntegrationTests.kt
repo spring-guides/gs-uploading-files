@@ -25,45 +25,45 @@ import java.util.stream.Stream
 @AutoConfigureRestTestClient
 class FileUploadIntegrationTests @Autowired constructor(private val client: RestTestClient) {
 
-    @MockitoBean
-    private lateinit var storageService: StorageService
+  @MockitoBean
+  private lateinit var storageService: StorageService
 
-    @LocalServerPort
-    private val port = 0
+  @LocalServerPort
+  private val port = 0
 
-    @Test
-    fun shouldUploadFile() {
-        val resource = ClassPathResource("testupload.txt", javaClass)
+  @Test
+  fun shouldUploadFile() {
+    val resource = ClassPathResource("testupload.txt", javaClass)
 
-        // In case of redirect, GET "/" calls storageService.loadAll(); stub it to avoid errors
-        BDDMockito.given(this.storageService.loadAll()).willReturn(Stream.empty())
+    // In case of redirect, GET "/" calls storageService.loadAll(); stub it to avoid errors
+    BDDMockito.given(this.storageService.loadAll()).willReturn(Stream.empty())
 
-        val map = LinkedMultiValueMap<String, Any>()
-        map.add("file", resource)
+    val map = LinkedMultiValueMap<String, Any>()
+    map.add("file", resource)
 
-        // Build a RestTestClient that does NOT follow redirects so we can assert 302/Location
-        val requestFactory: ClientHttpRequestFactory = ClientHttpRequestFactoryBuilder.jdk()
-            .withHttpClientCustomizer({ customizer -> customizer.followRedirects(HttpClient.Redirect.NEVER) })
-            .build()
-        val noRedirect = RestTestClient
-            .bindToServer(requestFactory)
-            .baseUrl("http://localhost:${this.port}")
-            .build()
+    // Build a RestTestClient that does NOT follow redirects so we can assert 302/Location
+    val requestFactory: ClientHttpRequestFactory = ClientHttpRequestFactoryBuilder.jdk()
+      .withHttpClientCustomizer({ customizer -> customizer.followRedirects(HttpClient.Redirect.NEVER) })
+      .build()
+    val noRedirect = RestTestClient
+      .bindToServer(requestFactory)
+      .baseUrl("http://localhost:${this.port}")
+      .build()
 
-        noRedirect.post().uri("/").contentType(MediaType.MULTIPART_FORM_DATA)
-            .body(map).exchange()
-            .expectStatus().isFound()
-            .expectHeader().valueMatches(HttpHeaders.LOCATION, "http://localhost:${this.port}/.*")
-    }
+    noRedirect.post().uri("/").contentType(MediaType.MULTIPART_FORM_DATA)
+      .body(map).exchange()
+      .expectStatus().isFound()
+      .expectHeader().valueMatches(HttpHeaders.LOCATION, "http://localhost:${this.port}/.*")
+  }
 
-    @Test
-    fun shouldDownloadFile() {
-        val resource = ClassPathResource("testupload.txt", javaClass)
-        BDDMockito.given<Resource?>(this.storageService.loadAsResource("testupload.txt")).willReturn(resource)
+  @Test
+  fun shouldDownloadFile() {
+    val resource = ClassPathResource("testupload.txt", javaClass)
+    BDDMockito.given<Resource?>(this.storageService.loadAsResource("testupload.txt")).willReturn(resource)
 
-        this.client.get().uri("/files/{filename}", "testupload.txt").exchangeSuccessfully()
-            .expectHeader().contentDisposition(ContentDisposition.attachment().filename("testupload.txt").build())
-            .expectBody<String>()
-            .isEqualTo("Spring Framework")
-    }
+    this.client.get().uri("/files/{filename}", "testupload.txt").exchangeSuccessfully()
+      .expectHeader().contentDisposition(ContentDisposition.attachment().filename("testupload.txt").build())
+      .expectBody<String>()
+      .isEqualTo("Spring Framework")
+  }
 }

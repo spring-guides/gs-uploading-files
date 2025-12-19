@@ -21,52 +21,52 @@ import java.util.stream.Stream
 @AutoConfigureMockMvc
 class FileUploadTests {
 
-    @Autowired
-    private lateinit var mvc: MockMvc
+  @Autowired
+  private lateinit var mvc: MockMvc
 
-    @MockitoBean
-    private lateinit var storageService: StorageService
+  @MockitoBean
+  private lateinit var storageService: StorageService
 
-    @Test
-    fun shouldListAllFiles() {
-        given(storageService.loadAll())
-            .willReturn(Stream.of(Paths.get("first.txt"), Paths.get("second.txt")))
+  @Test
+  fun shouldListAllFiles() {
+    given(storageService.loadAll())
+      .willReturn(Stream.of(Paths.get("first.txt"), Paths.get("second.txt")))
 
-        mvc.perform(get("/"))
-            .andExpect(status().isOk)
-            .andExpect(
-                model().attribute(
-                    "files",
-                    Matchers.contains(
-                        "http://localhost/files/first.txt",
-                        "http://localhost/files/second.txt"
-                    )
-                )
-            )
-    }
-
-    @Test
-    fun shouldSaveUploadedFile() {
-        val multipartFile = MockMultipartFile(
-            "file",
-            "test.txt",
-            "text/plain",
-            "Spring Framework".toByteArray()
+    mvc.perform(get("/"))
+      .andExpect(status().isOk)
+      .andExpect(
+        model().attribute(
+          "files",
+          Matchers.contains(
+            "http://localhost/files/first.txt",
+            "http://localhost/files/second.txt"
+          )
         )
+      )
+  }
 
-        mvc.perform(multipart("/").file(multipartFile))
-            .andExpect(status().isFound)
-            .andExpect(header().string("Location", "/"))
+  @Test
+  fun shouldSaveUploadedFile() {
+    val multipartFile = MockMultipartFile(
+      "file",
+      "test.txt",
+      "text/plain",
+      "Spring Framework".toByteArray()
+    )
 
-        then(storageService).should().store(multipartFile)
-    }
+    mvc.perform(multipart("/").file(multipartFile))
+      .andExpect(status().isFound)
+      .andExpect(header().string("Location", "/"))
 
-    @Test
-    fun should404WhenMissingFile() {
-        given(storageService.loadAsResource("test.txt"))
-            .willThrow(StorageFileNotFoundException::class.java)
+    then(storageService).should().store(multipartFile)
+  }
 
-        mvc.perform(get("/files/test.txt"))
-            .andExpect(status().isNotFound)
-    }
+  @Test
+  fun should404WhenMissingFile() {
+    given(storageService.loadAsResource("test.txt"))
+      .willThrow(StorageFileNotFoundException::class.java)
+
+    mvc.perform(get("/files/test.txt"))
+      .andExpect(status().isNotFound)
+  }
 }

@@ -7,16 +7,16 @@ import java.util.stream.Stream
 
 interface StorageService {
 
-    fun init()
+  fun init()
 
-    fun store(file: MultipartFile)
+  fun store(file: MultipartFile)
 
-    fun loadAll(): Stream<Path>
+  fun loadAll(): Stream<Path>
 
-    fun load(filename: String): Path
+  fun load(filename: String): Path
 
-    fun loadAsResource(filename: String): Resource?
+  fun loadAsResource(filename: String): Resource?
 
-    fun deleteAll()
+  fun deleteAll()
 
 }

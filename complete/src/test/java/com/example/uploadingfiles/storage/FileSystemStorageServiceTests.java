@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *	  https://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,16 +33,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FileSystemStorageServiceTests {
 
-	private StorageProperties properties = new StorageProperties();
+  private StorageProperties properties = new StorageProperties();
 
-	private FileSystemStorageService service;
+  private FileSystemStorageService service;
 
-	@BeforeEach
-	public void init() {
-		properties.setLocation("target/files/" + Math.abs(new Random().nextLong()));
-		service = new FileSystemStorageService(properties);
-		service.init();
-	}
+  @BeforeEach
+  public void init() {
+    properties.setLocation("target/files/" + Math.abs(new Random().nextLong()));
+    service = new FileSystemStorageService(properties);
+    service.init();
+  }
 
     @Test
     public void emptyUploadLocation() {
@@ -50,52 +50,52 @@ public class FileSystemStorageServiceTests {
         properties.setLocation("");
         assertThrows(StorageException.class, () -> {
             service = new FileSystemStorageService(properties);
-		});
+    });
     }
 
-	@Test
-	public void loadNonExistent() {
-		assertThat(service.load("foo.txt")).doesNotExist();
-	}
+  @Test
+  public void loadNonExistent() {
+    assertThat(service.load("foo.txt")).doesNotExist();
+  }
 
-	@Test
-	public void saveAndLoad() {
-		service.store(new MockMultipartFile("foo", "foo.txt", MediaType.TEXT_PLAIN_VALUE,
-				"Hello, World".getBytes()));
-		assertThat(service.load("foo.txt")).exists();
-	}
+  @Test
+  public void saveAndLoad() {
+    service.store(new MockMultipartFile("foo", "foo.txt", MediaType.TEXT_PLAIN_VALUE,
+        "Hello, World".getBytes()));
+    assertThat(service.load("foo.txt")).exists();
+  }
 
-	@Test
-	public void saveRelativePathNotPermitted() {
-		assertThrows(StorageException.class, () -> {
-			service.store(new MockMultipartFile("foo", "../foo.txt",
-					MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
-		});
-	}
+  @Test
+  public void saveRelativePathNotPermitted() {
+    assertThrows(StorageException.class, () -> {
+      service.store(new MockMultipartFile("foo", "../foo.txt",
+          MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
+    });
+  }
 
-	@Test
-	public void saveAbsolutePathNotPermitted() {
-		assertThrows(StorageException.class, () -> {
-			service.store(new MockMultipartFile("foo", "/etc/passwd",
-					MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
-		});
-	}
+  @Test
+  public void saveAbsolutePathNotPermitted() {
+    assertThrows(StorageException.class, () -> {
+      service.store(new MockMultipartFile("foo", "/etc/passwd",
+          MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
+    });
+  }
 
-	@Test
-	@EnabledOnOs({OS.LINUX})
-	public void saveAbsolutePathInFilenamePermitted() {
-		//Unix file systems (e.g. ext4) allows backslash '\' in file names.
-		String fileName="\\etc\\passwd";
-		service.store(new MockMultipartFile(fileName, fileName,
-				MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
-		assertTrue(Files.exists(
-				Paths.get(properties.getLocation()).resolve(Paths.get(fileName))));
-	}
+  @Test
+  @EnabledOnOs({OS.LINUX})
+  public void saveAbsolutePathInFilenamePermitted() {
+    //Unix file systems (e.g. ext4) allows backslash '\' in file names.
+    String fileName="\\etc\\passwd";
+    service.store(new MockMultipartFile(fileName, fileName,
+        MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
+    assertTrue(Files.exists(
+        Paths.get(properties.getLocation()).resolve(Paths.get(fileName))));
+  }
 
-	@Test
-	public void savePermitted() {
-		service.store(new MockMultipartFile("foo", "bar/../foo.txt",
-				MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
-	}
+  @Test
+  public void savePermitted() {
+    service.store(new MockMultipartFile("foo", "bar/../foo.txt",
+        MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()));
+  }
 
 }

@@ -32,95 +32,95 @@ import kotlin.random.Random
 
 class FileSystemStorageServiceTests {
 
-    private val properties = StorageProperties()
+  private val properties = StorageProperties()
 
-    private lateinit var service: FileSystemStorageService
+  private lateinit var service: FileSystemStorageService
 
-    @BeforeEach
-    fun init() {
-        properties.location = "target/files/${abs(Random.nextLong())}"
-        service = FileSystemStorageService(properties)
-        service.init()
+  @BeforeEach
+  fun init() {
+    properties.location = "target/files/${abs(Random.nextLong())}"
+    service = FileSystemStorageService(properties)
+    service.init()
+  }
+
+  @Test
+  fun emptyUploadLocation() {
+    properties.location = ""
+    assertThrows(StorageException::class.java) {
+      service = FileSystemStorageService(properties)
     }
+  }
 
-    @Test
-    fun emptyUploadLocation() {
-        properties.location = ""
-        assertThrows(StorageException::class.java) {
-            service = FileSystemStorageService(properties)
-        }
-    }
+  @Test
+  fun loadNonExistent() {
+    assertThat(service.load("foo.txt")).doesNotExist()
+  }
 
-    @Test
-    fun loadNonExistent() {
-        assertThat(service.load("foo.txt")).doesNotExist()
-    }
+  @Test
+  fun saveAndLoad() {
+    service.store(
+      MockMultipartFile(
+        "foo", "foo.txt",
+        MediaType.TEXT_PLAIN_VALUE,
+        "Hello, World".toByteArray()
+      )
+    )
+    assertThat(service.load("foo.txt")).exists()
+  }
 
-    @Test
-    fun saveAndLoad() {
-        service.store(
-            MockMultipartFile(
-                "foo", "foo.txt",
-                MediaType.TEXT_PLAIN_VALUE,
-                "Hello, World".toByteArray()
-            )
+  @Test
+  fun saveRelativePathNotPermitted() {
+    assertThrows(StorageException::class.java) {
+      service.store(
+        MockMultipartFile(
+          "foo", "../foo.txt",
+          MediaType.TEXT_PLAIN_VALUE,
+          "Hello, World".toByteArray()
         )
-        assertThat(service.load("foo.txt")).exists()
+      )
     }
+  }
 
-    @Test
-    fun saveRelativePathNotPermitted() {
-        assertThrows(StorageException::class.java) {
-            service.store(
-                MockMultipartFile(
-                    "foo", "../foo.txt",
-                    MediaType.TEXT_PLAIN_VALUE,
-                    "Hello, World".toByteArray()
-                )
-            )
-        }
-    }
-
-    @Test
-    fun saveAbsolutePathNotPermitted() {
-        assertThrows(StorageException::class.java) {
-            service.store(
-                MockMultipartFile(
-                    "foo", "/etc/passwd",
-                    MediaType.TEXT_PLAIN_VALUE,
-                    "Hello, World".toByteArray()
-                )
-            )
-        }
-    }
-
-    @Test
-    @EnabledOnOs(OS.LINUX)
-    fun saveAbsolutePathInFilenamePermitted() {
-        // Unix file systems (e.g. ext4) allows backslash '\' in file names.
-        val fileName = "\\etc\\passwd"
-        service.store(
-            MockMultipartFile(
-                fileName, fileName,
-                MediaType.TEXT_PLAIN_VALUE,
-                "Hello, World".toByteArray()
-            )
+  @Test
+  fun saveAbsolutePathNotPermitted() {
+    assertThrows(StorageException::class.java) {
+      service.store(
+        MockMultipartFile(
+          "foo", "/etc/passwd",
+          MediaType.TEXT_PLAIN_VALUE,
+          "Hello, World".toByteArray()
         )
-        assertTrue(
-            Files.exists(
-                Paths.get(properties.location).resolve(Paths.get(fileName))
-            )
-        )
+      )
     }
+  }
 
-    @Test
-    fun savePermitted() {
-        service.store(
-            MockMultipartFile(
-                "foo", "bar/../foo.txt",
-                MediaType.TEXT_PLAIN_VALUE,
-                "Hello, World".toByteArray()
-            )
-        )
-    }
+  @Test
+  @EnabledOnOs(OS.LINUX)
+  fun saveAbsolutePathInFilenamePermitted() {
+    // Unix file systems (e.g. ext4) allows backslash '\' in file names.
+    val fileName = "\\etc\\passwd"
+    service.store(
+      MockMultipartFile(
+        fileName, fileName,
+        MediaType.TEXT_PLAIN_VALUE,
+        "Hello, World".toByteArray()
+      )
+    )
+    assertTrue(
+      Files.exists(
+        Paths.get(properties.location).resolve(Paths.get(fileName))
+      )
+    )
+  }
+
+  @Test
+  fun savePermitted() {
+    service.store(
+      MockMultipartFile(
+        "foo", "bar/../foo.txt",
+        MediaType.TEXT_PLAIN_VALUE,
+        "Hello, World".toByteArray()
+      )
+    )
+  }
 }
