@@ -19,10 +19,7 @@ import java.util.stream.Stream
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class FileUploadTests {
-
-  @Autowired
-  private lateinit var mvc: MockMvc
+class FileUploadTests(@Autowired private val mvc: MockMvc) {
 
   @MockitoBean
   private lateinit var storageService: StorageService

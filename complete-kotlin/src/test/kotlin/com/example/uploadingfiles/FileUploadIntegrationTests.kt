@@ -23,7 +23,7 @@ import java.util.stream.Stream
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestTestClient
-class FileUploadIntegrationTests @Autowired constructor(private val client: RestTestClient) {
+class FileUploadIntegrationTests(@Autowired private val client: RestTestClient) {
 
   @MockitoBean
   private lateinit var storageService: StorageService
